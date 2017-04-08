@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">moviestar</string>
+    <string name="collection">Collection</string>
+    <string name="websearch">Websearch</string>
+    <string name="movies">Movies</string>
+    <string name="series">Series</string>
+</resources>
