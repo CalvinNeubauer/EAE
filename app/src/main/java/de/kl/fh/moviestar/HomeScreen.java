@@ -27,7 +27,7 @@ public class HomeScreen extends AppCompatActivity implements View.OnClickListene
         collect.setOnClickListener(this);
     }
 
-
+    // git Test
     public void onClick(View v){
         if(v == collect){
             Intent collIntent = new Intent(this, Collection.class);
