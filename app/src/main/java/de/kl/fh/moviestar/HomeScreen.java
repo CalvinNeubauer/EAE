@@ -14,6 +14,7 @@ import android.widget.Button;
 public class HomeScreen extends AppCompatActivity implements View.OnClickListener{
 
     private Button collect;
+    private Button search;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,16 +23,26 @@ public class HomeScreen extends AppCompatActivity implements View.OnClickListene
 
         //Buttons
         collect = (Button) findViewById(R.id.collection);
+        search = (Button) findViewById(R.id.wsearch);
 
         //Listener
         collect.setOnClickListener(this);
+        search.setOnClickListener(this);
     }
 
     // git Test
     public void onClick(View v){
+
+        //View collection
         if(v == collect){
             Intent collIntent = new Intent(this, Collection.class);
             startActivity(collIntent);
+        }
+
+        //start websearch
+        if(v == search){
+            Intent searchIntent = new Intent(this, Websearch.class);
+            startActivity(searchIntent);
         }
     }
 }

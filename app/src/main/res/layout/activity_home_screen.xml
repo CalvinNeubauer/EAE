@@ -22,7 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/websearch"
-        android:id="@+id/button2"
+        android:id="@+id/wsearch"
         android:layout_centerVertical="true"
         android:layout_alignStart="@+id/collection" />
 </RelativeLayout>
