@@ -9,4 +9,83 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="de.kl.fh.moviestar.Websearch">
 
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/titleET"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="76dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/title"
+        android:id="@+id/textView3"
+        android:layout_alignBottom="@+id/titleET"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="35dp"
+        android:layout_marginLeft="3dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/actor"
+        android:id="@+id/textView4"
+        android:layout_marginTop="37dp"
+        android:layout_marginLeft="3dp"
+        android:layout_below="@+id/titleET"
+        android:layout_alignStart="@+id/textView3" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/actorET"
+        android:layout_below="@+id/textView4"
+         />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/genre"
+        android:id="@+id/textView5"
+        android:layout_below="@+id/actorET"
+        android:layout_marginTop="32dp"
+        android:layout_marginLeft="3dp"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/genreET"
+        android:layout_below="@+id/textView5"
+         />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/year"
+        android:id="@+id/textView6"
+        android:layout_below="@+id/genreET"
+        android:layout_marginTop="32dp"
+        android:layout_marginLeft="3dp" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/yearET"
+        android:layout_below="@+id/textView6"
+        />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/search"
+        android:id="@+id/searchButton"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
+
 </RelativeLayout>

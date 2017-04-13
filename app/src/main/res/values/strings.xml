@@ -4,4 +4,9 @@
     <string name="websearch">Websearch</string>
     <string name="movies">Movies</string>
     <string name="series">Series</string>
+    <string name="title">Title</string>
+    <string name="actor">Actor</string>
+    <string name="genre">Genre</string>
+    <string name="year">Year</string>
+    <string name="search">Search</string>
 </resources>
