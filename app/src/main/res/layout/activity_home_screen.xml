@@ -7,7 +7,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:background="#283593"
+    android:background="@color/background"
     tools:context="de.kl.fh.moviestar.HomeScreen">
 
     <Button
@@ -15,6 +15,7 @@
         android:layout_height="wrap_content"
         android:text="@string/collection"
         android:textSize="40sp"
+        android:textColor="@color/letter"
         android:id="@+id/collection"
         android:layout_marginTop="145dp"
         style="?android:attr/borderlessButtonStyle"
@@ -26,6 +27,7 @@
         android:layout_height="wrap_content"
         android:text="@string/websearch"
         android:textSize="40sp"
+        android:textColor="@color/letter"
         android:layout_marginTop="20dp"
         android:id="@+id/wsearch"
         style="?android:attr/borderlessButtonStyle"

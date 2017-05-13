@@ -19,7 +19,8 @@
         <activity android:name=".FilmList" />
         <activity android:name=".Websearch" />
         <activity android:name=".list_element" />
-        <activity android:name=".websearchList"></activity>
+        <activity android:name=".websearchList" />
+        <activity android:name=".login"></activity>
     </application>
 
 </manifest>

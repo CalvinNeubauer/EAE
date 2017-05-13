@@ -35,7 +35,7 @@ public class HomeScreen extends AppCompatActivity implements View.OnClickListene
 
         //View collection
         if(v == collect){
-            Intent collIntent = new Intent(this, Collection.class);
+            Intent collIntent = new Intent(this, login.class);
             startActivity(collIntent);
         }
 
