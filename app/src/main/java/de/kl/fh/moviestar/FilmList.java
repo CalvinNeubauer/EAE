@@ -15,5 +15,7 @@ public class FilmList extends AppCompatActivity {
         //Get intent extra
         Intent myIntent = getIntent();
         type = myIntent.getStringExtra("type");
+
+
     }
 }

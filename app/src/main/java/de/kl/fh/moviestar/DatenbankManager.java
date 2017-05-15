@@ -1,6 +1,7 @@
 package de.kl.fh.moviestar;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -19,6 +20,7 @@ public class DatenbankManager extends SQLiteOpenHelper {
     public static final String COLUMN_IMAGE = "image";
     public static final String COLUMN_TIME = "runtime";
     public static final String COLUMN_AUTO_KEY = "primekey";
+    public static final String COLUMN_TYPE = "type";
 
 
     public DatenbankManager (Context ctx){
@@ -31,6 +33,7 @@ public class DatenbankManager extends SQLiteOpenHelper {
                 "CREATE TABLE "+TABEL_Name+"("+
                         COLUMN_TITLE + " TEXT, "+
                         COLUMN_IMAGE + " TEXT, "+
+                        COLUMN_TYPE + " TEXT, "+
                         COLUMN_TIME + "TEXT" + //Format entscheiden
                         COLUMN_AUTO_KEY+ " INTEGER PRIMARY KEY AUTOINCREMENT "+
                         ")"
@@ -40,5 +43,14 @@ public class DatenbankManager extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
+    }
+
+
+    //Abrufen aller Filmer oder Serien
+    public Cursor showAll (String Type){
+        SQLiteDatabase DB = this.getWritableDatabase();
+        Cursor zeiger = DB.rawQuery("SELECT * FROM "+TABEL_Name+"WHERE "+COLUMN_TYPE+"="+Type,null);
+        zeiger.moveToFirst();
+        return zeiger;
     }
 }
