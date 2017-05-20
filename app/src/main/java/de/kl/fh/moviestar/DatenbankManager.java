@@ -11,8 +11,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DatenbankManager extends SQLiteOpenHelper {
 
     //Basics
-    public static final int DATENBANK_VERSION = 1;
-    public static final String DATENBANK_NAME = "CouchPotato.db";
+    public static final int DATABASE_VERSION = 1;
+    public static final String DATABASE_NAME = "CouchPotato.db";
 
     //Table
     public static final String TABLE_MOVIES = "Movies";
@@ -67,7 +67,7 @@ public class DatenbankManager extends SQLiteOpenHelper {
 
 
     public DatenbankManager (Context ctx){
-        super(ctx,DATENBANK_NAME,null,DATENBANK_VERSION);
+        super(ctx,DATABASE_NAME,null,DATABASE_VERSION);
     }
 
     @Override
@@ -264,50 +264,250 @@ public class DatenbankManager extends SQLiteOpenHelper {
 
     public Cursor getAllMovies()
     {
-        String sql = "SELECT Title,Rating,Duration,Release,Description_EN,Description_DE,SEQUEL_OF,WATCHED FROM "+TABLE_MOVIES;
+        String sql = "SELECT TITLE,RATING,DURATION,RELEASE,DESCRIPTION_EN,DESCRIPTION_DE,SEQUEL_OF,WATCHED FROM "+TABLE_MOVIES;
         return getData(sql);
     }
 
     public Cursor getAllSeries()
     {
-        String sql = "SELECT * FROM "+TABLE_SERIES;
+        String sql = "SELECT TITLE,RATING,SEASONS,RELEASE,DESCRIPTION_EN,DESCRIPTION_DE FROM "+TABLE_SERIES;
         return getData(sql);
     }
 
     public Cursor getMoviesFromList(String listName)
     {
-        String sql = "SELECT Title,Rating,Duration,Release,Description_EN,Description_DE,SEQUEL_OF,WATCHED FROM "+TABLE_MOVIES+" a JOIN (SELECT MOVIE_ID FROM "+TABLE_MOVIE_LISTS_ELEMENTS+" a JOIN "+TABLE_MOVIE_LISTS+" b ON a.MOVIE_ID=b.ID WHERE b.NAME=?) b ON a.ID=b.MOVIE_ID";
+        String sql = "SELECT a.TITLE,a.RATING,a.DURATION,a.RELEASE,a.DESCRIPTION_EN,a.DESCRIPTION_DE,a.SEQUEL_OF,a.WATCHED FROM "+TABLE_MOVIES+" a JOIN (SELECT MOVIE_ID FROM "+TABLE_MOVIE_LISTS_ELEMENTS+" a JOIN "+TABLE_MOVIE_LISTS+" b ON a.MOVIE_ID=b.ID WHERE UPPER(b.NAME)=?) b ON a.ID=b.MOVIE_ID";
         return getData(sql,new String[]{listName});
     }
 
     public Cursor getSeriesFromList(String listName)
     {
-        String sql = "SELECT Title,Rating,Seasons,Release,Description_EN,Description_DE FROM "+TABLE_SERIES+" a JOIN (SELECT SERIES_ID FROM "+TABLE_SERIES_LISTS_ELEMENTS+" a JOIN "+TABLE_SERIES_LISTS+" b ON a.SERIES_ID=b.ID WHERE b.NAME=?) b ON a.ID=b.SERIES_ID";
+        String sql = "SELECT a.TITLE,a.RATING,a.SEASONS,a.RELEASE,a.DESCRIPTION_EN,a.DESCRIPTION_DE FROM "+TABLE_SERIES+" a JOIN (SELECT SERIES_ID FROM "+TABLE_SERIES_LISTS_ELEMENTS+" a JOIN "+TABLE_SERIES_LISTS+" b ON a.SERIES_ID=b.ID WHERE UPPER(b.NAME)=?) b ON a.ID=b.SERIES_ID";
         return getData(sql,new String[]{listName});
     }
 
     public Cursor getEpisodesFromSeason(int season, String series)
     {
-        String sql = "SELECT Title,Duration,Description_EN,Description_DE,Sequel_of FROM "+TABLE_EPISODES+" a JOIN (SELECT EPISODE_ID FROM "+TABLE_SEASON_EPISODES+"a JOIN "+TABLE_SERIES_SEASONS+" b ON a.SEASON_ID=b.ID WHERE b.SEASON=? AND b.SERIES_ID=(SELECT ID FROM "+TABLE_SERIES+" WHERE TITLE=?) b ON a.ID=b.EPISODE_ID";
+        String sql = "SELECT a.TITLE,a.DURATION,a.DESCRIPTION_EN,a.DESCRIPTION_DE,a.SEQUEL_OF FROM "+TABLE_EPISODES+" a JOIN (SELECT EPISODE_ID FROM "+TABLE_SEASON_EPISODES+"a JOIN "+TABLE_SERIES_SEASONS+" b ON a.SEASON_ID=b.ID WHERE b.SEASON=? AND b.SERIES_ID=(SELECT ID FROM "+TABLE_SERIES+" WHERE UPPER(b.TITLE)=?) b ON a.ID=b.EPISODE_ID";
         return getData(sql,new String[]{String.valueOf(season),series});
     }
 
     public Cursor getNumberOfSeasons(String series)
     {
-        String sql = "SELECT SEASONS FROM "+TABLE_SERIES+" WHERE TITLE=?";
+        String sql = "SELECT SEASONS FROM "+TABLE_SERIES+" WHERE UPPER(b.TITLE)=?";
         return getData(sql,new String[]{series});
     }
 
-    public Cursor getCastFromMovie(String movie){return null;}
+    public Cursor getCastFromMovie(String movie)
+    {
+        String sql = "SELECT a.NAME FROM "+TABLE_ACTORS+" a JOIN (SELECT a.ACTOR_ID FROM "+TABLE_MOVIE_ACTORS+" a JOIN "+TABLE_MOVIES+" b ON a.MOVIE_ID=b.ID WHERE UPPER(b.TITLE)=?) b ON b.ACTOR_ID=a.ID";
+        return getData(sql,new String[]{movie});
+    }
 
-    public Cursor getDirectorOfMovie(String movie){return null;}
+    public Cursor getDirectorOfMovie(String movie)
+    {
+        String sql = "SELECT a.NAME FROM "+TABLE_DIRECTORS+" a JOIN (SELECT a.DIRECTOR_ID FROM "+TABLE_MOVIE_DIRECTORS+" a JOIN "+TABLE_MOVIES+" b ON a.MOVIE_ID=b.ID WHERE UPPER(b.TITLE)=?) b ON b.DIRECTOR_ID=a.ID";
+        return getData(sql,new String[]{movie});
+    }
 
-    public Cursor getGenreOfMovie(String movie){return null;}
+    public Cursor getGenreOfMovie(String movie)
+    {
+        String sql = "SELECT a.NAME FROM "+TABLE_GENRES+" a JOIN (SELECT a.GENRE_ID FROM "+TABLE_MOVIE_GENRES+" a JOIN "+TABLE_MOVIES+" b ON a.MOVIE_ID=b.ID WHERE UPPER(b.TITLE)=?) b ON b.GENRE_ID=a.ID";
+        return getData(sql,new String[]{movie});
+    }
 
-    public Cursor getCastFromSeries(String series){return null;}
+    public Cursor getCastFromSeries(String series)
+    {
+        String sql = "SELECT a.NAME FROM "+TABLE_ACTORS+" a JOIN (SELECT a.ACTOR_ID FROM "+TABLE_SERIES_ACTORS+" a JOIN "+TABLE_SERIES+" b ON a.SERIES_ID=b.ID WHERE UPPER(b.TITLE)=?) b ON b.ACTOR_ID=a.ID";
+        return getData(sql,new String[]{series});
+    }
 
-    public Cursor getCreatorOfSeries(String series){return null;}
+    public Cursor getCreatorOfSeries(String series)
+    {
+        String sql = "SELECT a.NAME FROM "+TABLE_CREATORS+" a JOIN (SELECT a.CREATOR_ID FROM "+TABLE_SERIES_CREATORS+" a JOIN "+TABLE_SERIES+" b ON a.SERIES_ID=b.ID WHERE UPPER(b.TITLE)=?) b ON b.CREATOR_ID=a.ID";
+        return getData(sql,new String[]{series});
+    }
 
+    public Integer[] getMovieIDsByFilter(String title, String actor, String genre, String director)      //Search Terms: Actors,Genre,Director,Title
+    {
+        int arrays = 0;
+        Integer[] ret;
+        Integer[][] a = new Integer[4][0];
+        if(title!=null) {
+            arrays++;
+            a[arrays-1]=getMovieIDsByTitle(title.toUpperCase());
+        }
+        if(actor!=null){
+            arrays++;
+            a[arrays-1]=getMovieIDsByActor(actor.toUpperCase());
+        }
+        if(genre!=null){
+            arrays++;
+            a[arrays-1]=getMovieIDsByGenre(genre.toUpperCase());
+        }
+        if(director!=null){
+            arrays++;
+            a[arrays-1]=getMovieIDsByDirector(director.toUpperCase());
+        }
 
+        ret = a[0];
+        if(arrays==1)
+        {
+            return ret;
+        }
+        for(int i=1;i<arrays;i++)
+        {
+           ret=getIntegerIntersect(ret,a[i]);
+        }
+        return ret;
+    }
+
+    public Integer[] getMovieIDsByTitle(String title)
+    {
+        String sql = "SELECT ID AS MOVIE_ID FROM "+TABLE_MOVIES + " a WHERE UPPER(a.TITLE) LIKE '%?%'";
+        Cursor c = getData(sql,new String[]{title});
+        Integer[] ret = new Integer[c.getCount()];
+        int i = 0;
+        while (!c.isAfterLast())
+        {
+            ret[i] = c.getInt(0);
+            i++;
+        }
+        return ret;
+    }
+
+    public Integer[] getMovieIDsByActor(String actor)
+    {
+        String sql = "SELECT a.MOVIE_ID FROM "+TABLE_MOVIE_ACTORS+" a JOIN "+TABLE_ACTORS+" b ON a.ACTOR_ID=b.ID WHERE UPPER(b.NAME) LIKE '%?%'";
+        Cursor c = getData(sql,new String[]{actor});
+        Integer[] ret = new Integer[c.getCount()];
+        int i = 0;
+        while (!c.isAfterLast())
+        {
+            ret[i] = c.getInt(0);
+            i++;
+        }
+        return ret;
+    }
+
+    public Integer[] getMovieIDsByDirector(String director)
+    {
+        String sql = "SELECT a.MOVIE_ID FROM "+TABLE_MOVIE_DIRECTORS+" a JOIN "+TABLE_DIRECTORS+" b ON a.DIRECTOR_ID=b.ID UPPER(b.NAME) LIKE '%?%'";
+        Cursor c = getData(sql,new String[]{director});
+        Integer[] ret = new Integer[c.getCount()];
+        int i = 0;
+        while (!c.isAfterLast())
+        {
+            ret[i] = c.getInt(0);
+            i++;
+        }
+        return ret;
+    }
+
+    public Integer[] getMovieIDsByGenre(String genre)
+    {
+        String sql = "SELECT a.MOVIE_ID FROM "+TABLE_MOVIE_GENRES+" a JOIN "+TABLE_GENRES+" b ON a.GENRE_ID=b.ID WHERE UPPER(b.NAME) LIKE '%?%'";
+        Cursor c = getData(sql,new String[]{genre});
+        Integer[] ret = new Integer[c.getCount()];
+        int i = 0;
+        while (!c.isAfterLast())
+        {
+            ret[i] = c.getInt(0);
+            i++;
+        }
+        return ret;
+    }
+
+    public Integer[] getSeriesIDsByFilter(String title, String creator, String actor)     //Search Terms: Actors,Creators,Title
+    {
+        int arrays = 0;
+        Integer[] ret;
+        Integer[][] a = new Integer[4][0];
+        if(title!=null) {
+            arrays++;
+            a[arrays-1]=getSeriesIDsByTitle(title.toUpperCase());
+        }
+        if(actor!=null){
+            arrays++;
+            a[arrays-1]=getSeriesIDsByActor(actor.toUpperCase());
+        }
+        if(creator!=null){
+            arrays++;
+            a[arrays-1]=getSeriesIDByCreator(creator.toUpperCase());
+        }
+
+        ret = a[0];
+        if(arrays==1)
+        {
+            return ret;
+        }
+        for(int i=1;i<arrays;i++)
+        {
+            ret=getIntegerIntersect(ret,a[i]);
+        }
+        return ret;
+    }
+
+    public Integer[] getSeriesIDsByTitle(String title)
+    {
+        String sql = "SELECT ID AS SERIES_ID FROM "+TABLE_SERIES+" a WHERE UPPER(a.TITLE) LIKE '%?%'";
+        Cursor c = getData(sql,new String[]{title});
+        Integer[] ret = new Integer[c.getCount()];
+        int i = 0;
+        while (!c.isAfterLast())
+        {
+            ret[i] = c.getInt(0);
+            i++;
+        }
+        return ret;
+    }
+
+    public Integer[] getSeriesIDsByActor(String actor)
+    {
+        String sql = "SELECT a.SERIES_ID FROM "+TABLE_SERIES_ACTORS+" a JOIN "+TABLE_ACTORS+" b ON a.ACTOR_ID=b.ID WHERE UPPER(b.NAME) LIKE '%?%'";
+        Cursor c = getData(sql,new String[]{actor});
+        Integer[] ret = new Integer[c.getCount()];
+        int i = 0;
+        while (!c.isAfterLast())
+        {
+            ret[i] = c.getInt(0);
+            i++;
+        }
+        return ret;
+    }
+
+    public Integer[] getSeriesIDByCreator(String creator)
+    {
+        String sql = "SELECT a.SERIES_ID FROM "+TABLE_SERIES_CREATORS+" a JOIN "+TABLE_CREATORS+" b ON a.CREATOR_ID=b.ID WHERE UPPER(b.NAME) LIKE '%?%'";
+        Cursor c = getData(sql,new String[]{creator});
+        Integer[] ret = new Integer[c.getCount()];
+        int i = 0;
+        while (!c.isAfterLast())
+        {
+            ret[i] = c.getInt(0);
+            i++;
+        }
+        return ret;
+    }
+
+    public Integer[] getIntegerIntersect(Integer[] a, Integer [] b)
+    {
+        Integer[] ret = new Integer[0];
+        Integer[] tmp;
+        for(int i=0;i<a.length;i++)
+        {
+            for (int j = 0; j < b.length; j++)
+            {
+                if(a[i].equals(b[j]))
+                {
+                    tmp = ret;
+                    ret = new Integer[tmp.length+1];
+                    ret[ret.length-1] = a[i];
+                }
+            }
+        }
+        tmp = null;
+        return ret;
+    }
 
 }
