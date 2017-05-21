@@ -9,4 +9,5 @@
     <string name="genre">Genre</string>
     <string name="year">Year</string>
     <string name="search">Search</string>
+    <string name="myLists">My Lists</string>
 </resources>

@@ -8,15 +8,16 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="@color/background"
-    tools:context="de.kl.fh.moviestar.HomeScreen">
+    tools:context="de.kl.fh.moviestar.Movies">
+
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/movies"
+        android:text="@string/myLists"
         android:textSize="40sp"
         android:textColor="@color/letter"
-        android:id="@+id/movies"
+        android:id="@+id/myLists"
         android:layout_marginTop="145dp"
         style="?android:attr/borderlessButtonStyle"
         android:layout_alignParentTop="true"
@@ -25,12 +26,25 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/series"
+        android:text="@string/collection"
         android:textSize="40sp"
         android:textColor="@color/letter"
         android:layout_marginTop="20dp"
-        android:id="@+id/series"
+        android:id="@+id/collection"
         style="?android:attr/borderlessButtonStyle"
-        android:layout_below="@+id/movies"
+        android:layout_below="@+id/myLists"
+        android:layout_alignParentStart="true" />
+
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/websearch"
+        android:textSize="40sp"
+        android:textColor="@color/letter"
+        android:layout_marginTop="20dp"
+        android:id="@+id/websearch"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_below="@+id/collection"
         android:layout_alignParentStart="true" />
 </RelativeLayout>
