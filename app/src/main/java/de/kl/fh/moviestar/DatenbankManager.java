@@ -5,6 +5,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
 /**
  * Created by Marcus on 14.04.2017.
  */
@@ -335,19 +339,19 @@ public class DatenbankManager extends SQLiteOpenHelper {
         Integer[][] a = new Integer[4][0];
         if(title!=null) {
             arrays++;
-            a[arrays-1]=getMovieIDsByTitle(title.toUpperCase());
+            a[arrays-1]=removeDoubles(getMovieIDsByTitle(title.toUpperCase()));
         }
         if(actor!=null){
             arrays++;
-            a[arrays-1]=getMovieIDsByActor(actor.toUpperCase());
+            a[arrays-1]=removeDoubles(getMovieIDsByActor(actor.toUpperCase()));
         }
         if(genre!=null){
             arrays++;
-            a[arrays-1]=getMovieIDsByGenre(genre.toUpperCase());
+            a[arrays-1]=removeDoubles(getMovieIDsByGenre(genre.toUpperCase()));
         }
         if(director!=null){
             arrays++;
-            a[arrays-1]=getMovieIDsByDirector(director.toUpperCase());
+            a[arrays-1]=removeDoubles(getMovieIDsByDirector(director.toUpperCase()));
         }
 
         ret = a[0];
@@ -425,15 +429,15 @@ public class DatenbankManager extends SQLiteOpenHelper {
         Integer[][] a = new Integer[4][0];
         if(title!=null) {
             arrays++;
-            a[arrays-1]=getSeriesIDsByTitle(title.toUpperCase());
+            a[arrays-1]=removeDoubles(getSeriesIDsByTitle(title.toUpperCase()));
         }
         if(actor!=null){
             arrays++;
-            a[arrays-1]=getSeriesIDsByActor(actor.toUpperCase());
+            a[arrays-1]=removeDoubles(getSeriesIDsByActor(actor.toUpperCase()));
         }
         if(creator!=null){
             arrays++;
-            a[arrays-1]=getSeriesIDByCreator(creator.toUpperCase());
+            a[arrays-1]=removeDoubles(getSeriesIDByCreator(creator.toUpperCase()));
         }
 
         ret = a[0];
@@ -502,6 +506,10 @@ public class DatenbankManager extends SQLiteOpenHelper {
                 {
                     tmp = ret;
                     ret = new Integer[tmp.length+1];
+                    for(int k=0;k<tmp.length;k++)
+                    {
+                        ret[k]=ret[k];
+                    }
                     ret[ret.length-1] = a[i];
                 }
             }
@@ -510,4 +518,19 @@ public class DatenbankManager extends SQLiteOpenHelper {
         return ret;
     }
 
+    public Integer[] removeDoubles(Integer[] a)
+    {
+        Set<Integer> set = new HashSet<Integer>();
+        for (int i:a) {
+            set.add(i);
+        }
+        Integer[] ret = new Integer[set.size()];
+        int i=0;
+        Iterator it = set.iterator();
+        while (it.hasNext())
+        {
+            ret[i]=(Integer)it.next();
+        }
+        return ret;
+    }
 }
