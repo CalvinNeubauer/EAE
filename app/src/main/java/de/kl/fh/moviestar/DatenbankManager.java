@@ -17,7 +17,7 @@ public class DatenbankManager extends SQLiteOpenHelper {
     //Table
     public static final String TABLE_MOVIES = "Movies";
     public static final String COLUMN_ID = "id";
-    public static final String COLUMN_TITLE = "title";
+    public static final String COLUMN_TITLE = "title";hgf
     public static final String COLUMN_RATING = "rating";
     public static final String COLUMN_DURATION = "duration";
     public static final String COLUMN_RELEASE = "release";
