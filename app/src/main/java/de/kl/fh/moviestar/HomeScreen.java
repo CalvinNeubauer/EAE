@@ -1,12 +1,10 @@
 package de.kl.fh.moviestar;
 
 import android.content.Intent;
-import android.support.annotation.IdRes;
-import android.support.annotation.Nullable;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.webkit.WebView;
 import android.widget.Button;
 
 
@@ -14,10 +12,15 @@ import android.widget.Button;
 public class HomeScreen extends AppCompatActivity implements View.OnClickListener{
 
     private Button movies,series;
+    private DatabaseManager dbManager;
+    private SQLiteDatabase database;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        dbManager = new DatabaseManager(this);
+        database = dbManager.getWritableDatabase();
         setContentView(R.layout.activity_home_screen);
 
         //Buttons

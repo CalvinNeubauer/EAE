@@ -4,15 +4,18 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 /**
  * Created by Marcus on 14.04.2017.
  */
-public class DatenbankManager extends SQLiteOpenHelper {
+public class DatabaseManager extends SQLiteOpenHelper {
 
     //Basics
     public static final int DATABASE_VERSION = 1;
@@ -70,19 +73,40 @@ public class DatenbankManager extends SQLiteOpenHelper {
     public static final String COLUMN_CREATOR_ID = "creator_id";
 
 
-    public DatenbankManager (Context ctx){
+    public DatabaseManager(Context ctx){
         super(ctx,DATABASE_NAME,null,DATABASE_VERSION);
+    }
+
+    private void dropAllTables(SQLiteDatabase db)
+    {
+        // query to obtain the names of all tables in your database
+        Cursor c = db.rawQuery("SELECT name FROM sqlite_master WHERE type='table'", null);
+        List<String> tables = new ArrayList<>();
+
+        // iterate over the result set, adding every table name to a list
+        while (c.moveToNext()) {
+            Log.d("Delete", c.getString(0));
+            tables.add(c.getString(0));
+        }
+
+        // call DROP TABLE on every table name
+        for (String table : tables) {
+            String dropQuery = "DROP TABLE IF EXISTS " + table;
+            db.execSQL(dropQuery);
+        }
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        dropAllTables(db);
+        Log.d("Create","Database");
         db.execSQL(
                 "CREATE TABLE "+TABLE_MOVIES+"("+
                         COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"+
                         COLUMN_TITLE + " TEXT NOT NULL, "+
                         COLUMN_RATING + " REAL DEFAULT 0, "+
                         COLUMN_DURATION + "INTEGER, " +
-                        COLUMN_RELEASE + " INTEGER, "+
+                        COLUMN_RELEASE + " TEXT, "+
                         COLUMN_DESC_EN + " TEXT, " +
                         COLUMN_DESC_DE + " TEXT, " +
                         COLUMN_SEQUEL_OF + " INTEGER, " +
@@ -96,7 +120,7 @@ public class DatenbankManager extends SQLiteOpenHelper {
                         COLUMN_TITLE + " TEXT, "+
                         COLUMN_RATING + " REAL DEFAULT 0, "+
                         COLUMN_SEASONS + "INTEGER DEFAULT 0, " +
-                        COLUMN_RELEASE + " INTEGER, " +
+                        COLUMN_RELEASE + " TEXT, " +
                         COLUMN_DESC_EN + " TEXT, " +
                         COLUMN_DESC_DE + " TEXT " +
                         ")"
@@ -245,11 +269,77 @@ public class DatenbankManager extends SQLiteOpenHelper {
                         " FOREIGN KEY ("+COLUMN_CREATOR_ID+") REFERENCES "+TABLE_CREATORS+"("+COLUMN_ID+")" +
                         ")"
         );
+
+        insertMovieIntoDatabase(db, "Guardians of the Galaxy", 4.2, 117, "24042014");
+        insertMovieSequelIntoDatabase(db, "Guardians of the Galaxy Vol. 2", 4.5, 136, "24042017", "Guardians of the Galaxy");
+        insertMovieIntoDatabase(db, "Fast & Furious 8", 2.1, 125, "04042017");
+        setMovieToWatched(db, getMovieIDsByTitle("Fast & Furious 8")[0]);
+
+        insertSeriesIntoDatabase(db, "The Big Bang Theory", 4.3, 8, "2007");
+        insertSeriesIntoDatabase(db, "Breaking Bad", 4.9, 8, "2008");
+        for(int i=1;i<=8;i++) {
+            insertSeasonsIntoDatabase(db, getSeriesIDsByTitle("The Big Bang Theory")[0], i);
+        }
+        for(int i=1;i<=5;i++) {
+            insertSeasonsIntoDatabase(db, getSeriesIDsByTitle("Breaking Bad")[0], i);
+        }
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
+    }
+
+    private void insertMovieIntoDatabase(SQLiteDatabase db, String title, double rating, int duration, String release)
+    {
+        db.execSQL(
+                "INSERT INTO " + TABLE_MOVIES + " (TITLE,RATING,DURATION,RELEASE) VALUES ("+
+                        "'"+title+"'" + "," +
+                        rating + "," +
+                        duration + "," +
+                        "'"+release+"'"
+                        + ")"
+        );
+    }
+
+    private void insertMovieSequelIntoDatabase(SQLiteDatabase db, String title, double rating, int duration, String release, String prequel_name)
+    {
+        db.execSQL(
+                "INSERT INTO " + TABLE_MOVIES + " (TITLE,RATING,DURATION,RELEASE,SEQUEL_OF) VALUES ("+
+                        "'"+title+"'" + "," +
+                        rating + "," +
+                        duration + "," +
+                        "'"+release+"'" + "," +
+                        "(SELECT ID FROM MOVIES WHERE TITLE LIKE '"+prequel_name+"')"
+                        + ")"
+        );
+    }
+
+    private void setMovieToWatched(SQLiteDatabase db, int id)
+    {
+        db.execSQL("UPDATE TABLE "+TABLE_MOVIES+" SET WATCHED=1 WHERE ID="+id);
+    }
+
+    private void insertSeriesIntoDatabase(SQLiteDatabase db, String title, double rating, int seasons, String release)
+    {
+        db.execSQL(
+                "INSERT INTO " + TABLE_SERIES + " (TITLE,RATING,SEASONS,RELEASE) VALUES ("+
+                        "'"+title+"'" + "," +
+                        rating + "," +
+                        seasons + "," +
+                        "'"+release+"'"
+                        + ")"
+        );
+    }
+
+    private void insertSeasonsIntoDatabase(SQLiteDatabase db, int series_id, int season_number)
+    {
+        db.execSQL(
+                "INSERT INTO " + TABLE_SERIES_SEASONS + " (SERIES_ID,SEASON) VALUES ("+
+                        series_id + "," +
+                        season_number
+                        + ")"
+        );
     }
 
     public Cursor getData(String sql)
@@ -533,4 +623,5 @@ public class DatenbankManager extends SQLiteOpenHelper {
         }
         return ret;
     }
+
 }
