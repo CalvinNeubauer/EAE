@@ -103,7 +103,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
         db.execSQL(
                 "CREATE TABLE "+TABLE_MOVIES+"("+
                         COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"+
-                        COLUMN_TITLE + " TEXT NOT NULL, "+
+                        COLUMN_TITLE + " TEXT NOT NULL UNIQUE, "+
                         COLUMN_RATING + " REAL DEFAULT 0, "+
                         COLUMN_DURATION + "INTEGER, " +
                         COLUMN_RELEASE + " TEXT, "+
@@ -117,7 +117,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
         db.execSQL(
                 "CREATE TABLE "+TABLE_SERIES+"("+
                         COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"+
-                        COLUMN_TITLE + " TEXT, "+
+                        COLUMN_TITLE + " TEXT NOT NULL UNIQUE, "+
                         COLUMN_RATING + " REAL DEFAULT 0, "+
                         COLUMN_SEASONS + "INTEGER DEFAULT 0, " +
                         COLUMN_RELEASE + " TEXT, " +
@@ -129,7 +129,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
         db.execSQL(
                 "CREATE TABLE "+TABLE_EPISODES+"("+
                         COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"+
-                        COLUMN_TITLE + " TEXT, "+
+                        COLUMN_TITLE + " TEXT UNIQUE, "+
                         COLUMN_DURATION + "INTEGER, " +
                         COLUMN_DESC_EN + " TEXT, " +
                         COLUMN_DESC_DE + " TEXT, " +
@@ -195,28 +195,28 @@ public class DatabaseManager extends SQLiteOpenHelper {
         db.execSQL(
                 "CREATE TABLE " + TABLE_ACTORS + "(" +
                         COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                        COLUMN_NAME + " TEXT NOT NULL " +
+                        COLUMN_NAME + " TEXT NOT NULL UNIQUE" +
                         ")"
         );
 
         db.execSQL(
                 "CREATE TABLE " + TABLE_CREATORS + "(" +
                         COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                        COLUMN_NAME + " TEXT NOT NULL " +
+                        COLUMN_NAME + " TEXT NOT NULL UNIQUE" +
                         ")"
         );
 
         db.execSQL(
                 "CREATE TABLE " + TABLE_GENRES + "(" +
                         COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                        COLUMN_NAME + " TEXT NOT NULL " +
+                        COLUMN_NAME + " TEXT NOT NULL UNIQUE" +
                         ")"
         );
 
         db.execSQL(
                 "CREATE TABLE " + TABLE_DIRECTORS + "(" +
                         COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                        COLUMN_NAME + " TEXT NOT NULL " +
+                        COLUMN_NAME + " TEXT NOT NULL UNIQUE" +
                         ")"
         );
 
@@ -290,6 +290,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
 
     }
 
+    //------SET DATA------------------------------------------------------------------------------------------------------------
     private void insertMovieIntoDatabase(SQLiteDatabase db, String title, double rating, int duration, String release)
     {
         db.execSQL(
@@ -342,6 +343,44 @@ public class DatabaseManager extends SQLiteOpenHelper {
         );
     }
 
+    private void insertActorIntoDatabase(SQLiteDatabase db, String name)
+    {
+        db.execSQL(
+                "INSERT INTO " + TABLE_ACTORS + " (NAME) VALUES ("+
+                        name
+                        + ")"
+        );
+    }
+
+    private void insertCreatorIntoDatabase(SQLiteDatabase db, String name)
+    {
+        db.execSQL(
+                "INSERT INTO " + TABLE_CREATORS + " (NAME) VALUES ("+
+                        name
+                        + ")"
+        );
+    }
+
+    private void insertDirectorIntoDatabase(SQLiteDatabase db, String name)
+    {
+        db.execSQL(
+                "INSERT INTO " + TABLE_DIRECTORS + " (NAME) VALUES ("+
+                        name
+                        + ")"
+        );
+    }
+
+    private void insertGenreIntoDatabase(SQLiteDatabase db, String name)
+    {
+        db.execSQL(
+                "INSERT INTO " + TABLE_GENRES + " (NAME) VALUES ("+
+                        name
+                        + ")"
+        );
+    }
+
+
+    //------GET DATA------------------------------------------------------------------------------------------------------------
     public Cursor getData(String sql)
     {
         return getData(sql,null);
