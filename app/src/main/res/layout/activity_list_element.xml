@@ -13,23 +13,25 @@
     <ImageView
         android:layout_width="150dp"
         android:layout_height="250dp"
-        android:id="@+id/imageView" />
+        android:id="@+id/Film_Image" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Large Text"
-        android:id="@+id/textView"
+        android:textColor="@color/letter"
+        android:id="@+id/Film_Name"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:layout_toEndOf="@+id/imageView" />
+        android:layout_toEndOf="@+id/Film_Image" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="New Text"
-        android:id="@+id/textView2"
-        android:layout_below="@+id/textView"
-        android:layout_alignStart="@+id/textView" />
+        android:textColor="@color/letter"
+        android:id="@+id/Film_Duration"
+        android:layout_below="@+id/Film_Name"
+        android:layout_alignStart="@+id/Film_Name" />
 </RelativeLayout>

@@ -51,7 +51,7 @@ public class film_list_adapter extends CursorAdapter {
 
     }
 
-    public  film_list_adapter(Context context, int layout, Cursor c, String[] from, int flags, int[] to){
+    public  film_list_adapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags){
         super(context,c,flags);
         myLayoutInflater = LayoutInflater.from(context);
         this.layout = layout;
