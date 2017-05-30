@@ -284,6 +284,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
         for(int i=1;i<=5;i++) {
             insertSeasonsIntoDatabase(getSeriesIDsByTitle("Breaking Bad")[0], i);
         }
+        getAllMovies();
     }
 
     @Override
@@ -385,7 +386,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
     //------GET DATA------------------------------------------------------------------------------------------------------------
     public Cursor getData(String sql)
     {
-        return getData(sql,null);
+        return getData(sql, new String[]{});
     }
 
     public Cursor getData(String sql,String[] params)
@@ -398,31 +399,31 @@ public class DatabaseManager extends SQLiteOpenHelper {
 
     public Cursor getAllMovies()
     {
-        String sql = "SELECT TITLE,RATING,DURATION,RELEASE,DESCRIPTION_EN,DESCRIPTION_DE,SEQUEL_OF,WATCHED FROM "+TABLE_MOVIES;
+        String sql = "SELECT TITLE, RATING, DURATION, RELEASE, DESCRIPTION_EN, DESCRIPTION_DE, SEQUEL_OF, WATCHED FROM "+TABLE_MOVIES;
         return getData(sql);
     }
 
     public Cursor getAllSeries()
     {
-        String sql = "SELECT TITLE,RATING,SEASONS,RELEASE,DESCRIPTION_EN,DESCRIPTION_DE FROM "+TABLE_SERIES;
+        String sql = "SELECT TITLE, RATING, SEASONS, RELEASE, DESCRIPTION_EN, DESCRIPTION_DE FROM "+TABLE_SERIES;
         return getData(sql);
     }
 
     public Cursor getMoviesFromList(String listName)
     {
-        String sql = "SELECT a.TITLE,a.RATING,a.DURATION,a.RELEASE,a.DESCRIPTION_EN,a.DESCRIPTION_DE,a.SEQUEL_OF,a.WATCHED FROM "+TABLE_MOVIES+" a JOIN (SELECT MOVIE_ID FROM "+TABLE_MOVIE_LISTS_ELEMENTS+" a JOIN "+TABLE_MOVIE_LISTS+" b ON a.MOVIE_ID=b.ID WHERE UPPER(b.NAME)=?) b ON a.ID=b.MOVIE_ID";
+        String sql = "SELECT a.TITLE , a.RATING, a.DURATION, a.RELEASE, a.DESCRIPTION_EN, a.DESCRIPTION_DE, a.SEQUEL_OF, a.WATCHED FROM "+TABLE_MOVIES+" a JOIN (SELECT MOVIE_ID FROM "+TABLE_MOVIE_LISTS_ELEMENTS+" a JOIN "+TABLE_MOVIE_LISTS+" b ON a.MOVIE_ID=b.ID WHERE UPPER(b.NAME)=?) b ON a.ID=b.MOVIE_ID";
         return getData(sql,new String[]{listName});
     }
 
     public Cursor getSeriesFromList(String listName)
     {
-        String sql = "SELECT a.TITLE,a.RATING,a.SEASONS,a.RELEASE,a.DESCRIPTION_EN,a.DESCRIPTION_DE FROM "+TABLE_SERIES+" a JOIN (SELECT SERIES_ID FROM "+TABLE_SERIES_LISTS_ELEMENTS+" a JOIN "+TABLE_SERIES_LISTS+" b ON a.SERIES_ID=b.ID WHERE UPPER(b.NAME)=?) b ON a.ID=b.SERIES_ID";
+        String sql = "SELECT a.TITLE, a.RATING, a.SEASONS, a.RELEASE, a.DESCRIPTION_EN, a.DESCRIPTION_DE FROM "+TABLE_SERIES+" a JOIN (SELECT SERIES_ID FROM "+TABLE_SERIES_LISTS_ELEMENTS+" a JOIN "+TABLE_SERIES_LISTS+" b ON a.SERIES_ID=b.ID WHERE UPPER(b.NAME)=?) b ON a.ID=b.SERIES_ID";
         return getData(sql,new String[]{listName});
     }
 
     public Cursor getEpisodesFromSeason(int season, String series)
     {
-        String sql = "SELECT a.TITLE,a.DURATION,a.DESCRIPTION_EN,a.DESCRIPTION_DE,a.SEQUEL_OF FROM "+TABLE_EPISODES+" a JOIN (SELECT EPISODE_ID FROM "+TABLE_SEASON_EPISODES+"a JOIN "+TABLE_SERIES_SEASONS+" b ON a.SEASON_ID=b.ID WHERE b.SEASON=? AND b.SERIES_ID=(SELECT ID FROM "+TABLE_SERIES+" WHERE UPPER(b.TITLE)=?) b ON a.ID=b.EPISODE_ID";
+        String sql = "SELECT a.TITLE, a.DURATION, a.DESCRIPTION_EN, a.DESCRIPTION_DE, a.SEQUEL_OF FROM "+TABLE_EPISODES+" a JOIN (SELECT EPISODE_ID FROM "+TABLE_SEASON_EPISODES+"a JOIN "+TABLE_SERIES_SEASONS+" b ON a.SEASON_ID=b.ID WHERE b.SEASON=? AND b.SERIES_ID=(SELECT ID FROM "+TABLE_SERIES+" WHERE UPPER(b.TITLE)=?) b ON a.ID=b.EPISODE_ID";
         return getData(sql,new String[]{String.valueOf(season),series});
     }
 
