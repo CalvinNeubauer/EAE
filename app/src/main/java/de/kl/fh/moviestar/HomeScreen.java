@@ -19,8 +19,7 @@ public class HomeScreen extends AppCompatActivity implements View.OnClickListene
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        dbManager = new DatabaseManager(this);
-        database = dbManager.getWritableDatabase();
+        dbManager = DatabaseManager.getInstance(this);
         setContentView(R.layout.activity_home_screen);
 
         //Buttons
@@ -30,6 +29,7 @@ public class HomeScreen extends AppCompatActivity implements View.OnClickListene
         //Listener
         movies.setOnClickListener(this);
         series.setOnClickListener(this);
+        dbManager.getAllMovies();
     }
 
     // git Test

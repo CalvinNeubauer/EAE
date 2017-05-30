@@ -34,18 +34,18 @@ public class film_list_adapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         //define picture
-        int image = cursor.getInt(cursor.getColumnIndex(from[0]));
-        ImageView moviePic = (ImageView) view.findViewById(to[0]);
-        moviePic.setImageResource(image);
+        //int image = cursor.getInt(cursor.getColumnIndex(from[1]));
+        //ImageView moviePic = (ImageView) view.findViewById(to[1]);
+        //moviePic.setImageResource(image);
 
         //define name
-        String movieN = cursor.getString(cursor.getColumnIndex(from[1]));
-        TextView movieName = (TextView) view.findViewById(to[1]);
+        String movieN = cursor.getString(cursor.getColumnIndex(from[0]));
+        TextView movieName = (TextView) view.findViewById(to[0]);
         movieName.setText(movieN);
 
         //define duration
-        String duration = cursor.getString(cursor.getColumnIndex(from[2]));
-        TextView movieDuration = (TextView) view.findViewById(to[2]);
+        String duration = cursor.getString(cursor.getColumnIndex(from[1]));
+        TextView movieDuration = (TextView) view.findViewById(to[1]);
         movieDuration.setText(duration);
 
 

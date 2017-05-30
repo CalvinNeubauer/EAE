@@ -8,7 +8,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="@color/background"
-    tools:context="de.kl.fh.moviestar.FilmList">
+    tools:context="de.kl.fh.moviestar.ShortList">
 
 
     <ListView

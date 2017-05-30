@@ -15,17 +15,18 @@ import java.util.Set;
 /**
  * Created by Marcus on 14.04.2017.
  */
-public class DatabaseManager extends SQLiteOpenHelper {
+public class DatabaseManager extends SQLiteOpenHelper{
 
     //Basics
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "CouchPotato.db";
     private static SQLiteDatabase database;
+    private static DatabaseManager instance;
 
     //Table
     private static final String TABLE_MOVIES = "Movies";
     private static final String COLUMN_ID = "id";
-    private static final String COLUMN_TITLE = "title";
+    public static final String COLUMN_TITLE = "title";
     private static final String COLUMN_RATING = "rating";
     public static final String COLUMN_DURATION = "duration";
     private static final String COLUMN_RELEASE = "release";
@@ -73,10 +74,16 @@ public class DatabaseManager extends SQLiteOpenHelper {
     private static final String COLUMN_GENRE_ID = "genre_id";
     private static final String COLUMN_CREATOR_ID = "creator_id";
 
-
-    public DatabaseManager(Context ctx){
-        super(ctx,DATABASE_NAME,null,DATABASE_VERSION);
+    public static DatabaseManager getInstance(Context ctx){
+        if(instance == null) {
+            instance = new DatabaseManager(ctx);
+            if(database == null)
+                database = instance.getWritableDatabase();
+        }
+        return instance;
     }
+
+    private DatabaseManager(Context ctx) { super(ctx,DATABASE_NAME,null,DATABASE_VERSION); }
 
     private void dropAllTables(SQLiteDatabase db)
     {
@@ -99,7 +106,10 @@ public class DatabaseManager extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        database = db;
+        if(db != null)
+            database = db;
+        else
+            database = this.getWritableDatabase();
         Log.d("Create","Database");
         db.execSQL(
                 "CREATE TABLE "+TABLE_MOVIES+"("+
@@ -284,7 +294,6 @@ public class DatabaseManager extends SQLiteOpenHelper {
         for(int i=1;i<=5;i++) {
             insertSeasonsIntoDatabase(getSeriesIDsByTitle("Breaking Bad")[0], i);
         }
-        getAllMovies();
     }
 
     @Override
@@ -399,13 +408,13 @@ public class DatabaseManager extends SQLiteOpenHelper {
 
     public Cursor getAllMovies()
     {
-        String sql = "SELECT TITLE, RATING, DURATION, RELEASE, DESCRIPTION_EN, DESCRIPTION_DE, SEQUEL_OF, WATCHED FROM "+TABLE_MOVIES;
+        String sql = "SELECT ROWID AS _id, TITLE, RATING, DURATION, RELEASE, DESCRIPTION_EN, DESCRIPTION_DE, SEQUEL_OF, WATCHED FROM "+TABLE_MOVIES;
         return getData(sql);
     }
 
     public Cursor getAllSeries()
     {
-        String sql = "SELECT TITLE, RATING, SEASONS, RELEASE, DESCRIPTION_EN, DESCRIPTION_DE FROM "+TABLE_SERIES;
+        String sql = "SELECT ROWID AS _id, TITLE, RATING, SEASONS, RELEASE, DESCRIPTION_EN, DESCRIPTION_DE FROM "+TABLE_SERIES;
         return getData(sql);
     }
 
@@ -509,6 +518,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
             i++;
             c.moveToNext();
         }
+        c.close();
         return ret;
     }
 
@@ -524,6 +534,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
             i++;
             c.moveToNext();
         }
+        c.close();
         return ret;
     }
 
@@ -539,6 +550,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
             i++;
             c.moveToNext();
         }
+        c.close();
         return ret;
     }
 
@@ -554,6 +566,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
             i++;
             c.moveToNext();
         }
+        c.close();
         return ret;
     }
 
@@ -599,6 +612,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
             i++;
             c.moveToNext();
         }
+        c.close();
         return ret;
     }
 
@@ -614,6 +628,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
             i++;
             c.moveToNext();
         }
+        c.close();
         return ret;
     }
 
@@ -629,6 +644,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
             i++;
             c.moveToNext();
         }
+        c.close();
         return ret;
     }
 

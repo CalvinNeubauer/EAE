@@ -40,8 +40,9 @@ public class Movies extends AppCompatActivity implements View.OnClickListener {
 
         //start Collection
         if(v == collection){
-            Intent searchIntent = new Intent(this, Collection.class);
-            startActivity(searchIntent);
+            Intent collectionIntent = new Intent(this, ShortList.class);
+            collectionIntent.putExtra("type","movies");
+            startActivity(collectionIntent);
         }
 
         //start Websearch
