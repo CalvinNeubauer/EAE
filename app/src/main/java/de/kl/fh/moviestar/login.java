@@ -35,7 +35,7 @@ public class login extends AppCompatActivity implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        if(v == Login){
+        /*if(v == Login){
             if(checkLogin()){
                 Intent logedIn = new Intent(this, Collection.class);
                 logedIn.putExtra("username", Username.getText().toString());
@@ -44,6 +44,6 @@ public class login extends AppCompatActivity implements View.OnClickListener {
 
             }
         }
-
+*/
     }
 }
