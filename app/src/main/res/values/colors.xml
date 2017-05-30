@@ -5,4 +5,6 @@
     <color name="colorAccent">#FF4081</color>
     <color name="background">#000000</color>
     <color name="letter">#ffffff</color>
+    <color name="darkLetter">#999999</color>
+    <color name="divider">#323232</color>
 </resources>

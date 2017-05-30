@@ -39,10 +39,11 @@ public class Series extends AppCompatActivity implements View.OnClickListener {
         }
 
         //start Collection
-       /* if(v == collection){
-            Intent searchIntent = new Intent(this, Collection.class);
-            startActivity(searchIntent);
-        }*/
+        if(v == collection){
+            Intent collectionIntent = new Intent(this, ShortList.class);
+            collectionIntent.putExtra("type","series");
+            startActivity(collectionIntent);
+        }
 
         //start Websearch
         if(v == websearch){

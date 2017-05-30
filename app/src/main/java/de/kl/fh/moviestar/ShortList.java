@@ -8,13 +8,15 @@ import android.os.Bundle;
 import android.widget.ListView;
 
 public class ShortList extends AppCompatActivity {
-    DatabaseManager db;
-    ListView listView;
-    String type;
+    private DatabaseManager db;
+    private ListView listView;
+    private String type;
+    private String[] from;
+    private int[] to;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_film_list);
+        setContentView(R.layout.activity_shortlist);
 
         //Get intent extra
         Intent myIntent = getIntent();
@@ -24,24 +26,21 @@ public class ShortList extends AppCompatActivity {
         listView = (ListView)findViewById(R.id.mein_list_view);
 
         Context ctx = this;
-        int ItemLayout = R.layout.film_list_adapter;
+        int ItemLayout = R.layout.element_shortlist;
         Cursor cursor;
 
         //Bestimmung der Liste
         if(type.equals("movies")){
             cursor = db.getAllMovies();
+            from = new String[] {DatabaseManager.COLUMN_TITLE, DatabaseManager.COLUMN_DURATION, DatabaseManager.COLUMN_RATING};
         }
         else{
             cursor = db.getAllSeries();
+            from = new String[] {DatabaseManager.COLUMN_TITLE, DatabaseManager.COLUMN_SEASONS, DatabaseManager.COLUMN_RATING};
         }
 
-        String[] from = new String[] {DatabaseManager.COLUMN_TITLE, DatabaseManager.COLUMN_DURATION};
-        int[] to = new int[]{R.id.movie_name, R.id.movie_duration};
-
-        film_list_adapter adapter   = new film_list_adapter(ctx,ItemLayout,cursor,from,to,0);
+        to = new int[]{R.id.title_name, R.id.title_duration, R.id.title_rating, R.id.title_rating_text};
+        ShortListAdapter adapter   = new ShortListAdapter(ctx,ItemLayout,cursor,from,to,type,0);
         listView.setAdapter(adapter);
-
-
-
     }
 }
