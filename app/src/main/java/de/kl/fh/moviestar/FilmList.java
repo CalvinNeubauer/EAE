@@ -24,19 +24,19 @@ public class FilmList extends AppCompatActivity {
         listView = (ListView)findViewById(R.id.mein_list_view);
 
         Context ctx = this;
-        int ItemLayout = R.layout.activity_list_element;
+        int ItemLayout = R.layout.film_list_adapter;
         Cursor cursor;
 
         //Bestimmung der Liste
-        if(type == "movies"){
+        if(type.equals("movies")){
             cursor = db.getAllMovies();
         }
         else{
             cursor = db.getAllSeries();
         }
 
-        String[] from = new String[] {db.COLUMN_NAME, db.COLUMN_DURATION};
-        int[] to = new int[]{R.id.Film_Image, R.id.Film_Duration};
+        String[] from = new String[] {DatabaseManager.COLUMN_NAME, DatabaseManager.COLUMN_DURATION};
+        int[] to = new int[]{R.id.movie_name, R.id.movie_duration};
 
         film_list_adapter adapter   = new film_list_adapter(ctx,ItemLayout,cursor,from,to,0);
         listView.setAdapter(adapter);
