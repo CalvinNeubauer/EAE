@@ -5,7 +5,11 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class ShortList extends AppCompatActivity {
     DatabaseManager db;
@@ -23,7 +27,7 @@ public class ShortList extends AppCompatActivity {
         db = DatabaseManager.getInstance(this);
         listView = (ListView)findViewById(R.id.mein_list_view);
 
-        Context ctx = this;
+        final Context ctx = this;
         int ItemLayout = R.layout.film_list_adapter;
         Cursor cursor;
 
@@ -40,8 +44,19 @@ public class ShortList extends AppCompatActivity {
 
         film_list_adapter adapter   = new film_list_adapter(ctx,ItemLayout,cursor,from,to,0);
         listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            TextView test = (TextView) view.findViewById(R.id.movie_duration);
+                test.setText("Versuch");
+
+            }
+        });
+
 
 
 
     }
+
+
 }
