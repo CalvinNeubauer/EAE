@@ -185,7 +185,7 @@ public class DatabaseManager extends SQLiteOpenHelper{
 
         db.execSQL(
                 "CREATE TABLE " + TABLE_MOVIE_LISTS_ELEMENTS + "(" +
-                        COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                        COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                         COLUMN_MOVIE_LIST_ID + " INTEGER, " +
                         COLUMN_MOVIE_ID + " INTEGER, " +
                         " FOREIGN KEY ("+COLUMN_MOVIE_LIST_ID+") REFERENCES "+TABLE_MOVIE_LISTS+"("+COLUMN_ID+")," +
@@ -294,6 +294,11 @@ public class DatabaseManager extends SQLiteOpenHelper{
         for(int i=1;i<=5;i++) {
             insertSeasonsIntoDatabase(getSeriesIDsByTitle("Breaking Bad")[0], i);
         }
+
+        addMovieList("Watch List");
+        addMovieToList("Watch List", "Fast & Furious 8");
+        addMovieToList("Watch List", "Guardians of the Galaxy");
+        addMovieToList("Watch List", "Guardians of the Galaxy Vol. 2");
     }
 
     @Override
@@ -391,6 +396,44 @@ public class DatabaseManager extends SQLiteOpenHelper{
         );
     }
 
+    private void addMovieList(String name)
+    {
+        database.execSQL(
+                "INSERT INTO " + TABLE_MOVIE_LISTS + " (NAME) VALUES ("+
+                        "'"+name+"'"
+                        + ")"
+        );
+    }
+
+    private void addSeriesList(String name)
+    {
+        database.execSQL(
+                "INSERT INTO " + TABLE_SERIES_LISTS + " (NAME) VALUES ("+
+                        name
+                        + ")"
+        );
+    }
+
+    private void addMovieToList(String listName, String movieName)
+    {
+        database.execSQL(
+                "INSERT INTO " + TABLE_MOVIE_LISTS_ELEMENTS + " (MOVIE_LIST_ID,MOVIE_ID) VALUES ("+
+                        "(SELECT ID FROM "+TABLE_MOVIE_LISTS+" WHERE NAME LIKE '"+listName+"')" + "," +
+                        "(SELECT ID FROM "+TABLE_MOVIES+" WHERE TITLE LIKE '"+movieName+"')"
+                        + ")"
+        );
+    }
+
+    private void addSeriesToList(String listName, String seriesName)
+    {
+        database.execSQL(
+                "INSERT INTO " + TABLE_SERIES_LISTS_ELEMENTS + " (SERIES_LIST_ID,SERIES_ID) VALUES ("+
+                        "(SELECT ID FROM "+TABLE_SERIES_LISTS+" WHERE NAME LIKE '"+listName+"')" + "," +
+                        "(SELECT ID FROM "+TABLE_SERIES+" WHERE TITLE LIKE '"+seriesName+"')"
+                        + ")"
+        );
+    }
+
 
     //------GET DATA------------------------------------------------------------------------------------------------------------
     public Cursor getData(String sql)
@@ -415,6 +458,18 @@ public class DatabaseManager extends SQLiteOpenHelper{
     public Cursor getAllSeries()
     {
         String sql = "SELECT ROWID AS _id, TITLE, RATING, SEASONS, RELEASE, DESCRIPTION_EN, DESCRIPTION_DE FROM "+TABLE_SERIES;
+        return getData(sql);
+    }
+
+    public Cursor getMovieLists()
+    {
+        String sql = "SELECT ID AS _id, NAME, COUNT(MOVIE_LIST_ID) AS MOVIES FROM " + TABLE_MOVIE_LISTS + " JOIN (SELECT MOVIE_LIST_ID FROM " + TABLE_MOVIE_LISTS_ELEMENTS + ") ON ID=MOVIE_LIST_ID  GROUP BY _id, NAME";
+        return getData(sql);
+    }
+
+    public Cursor getSeriesLists()
+    {
+        String sql = "SELECT ID AS _id, a.NAME, COUNT(b.SERIES_ID) AS b.SERIES FROM " + TABLE_SERIES_LISTS + " AS a JOIN " + TABLE_SERIES_LISTS_ELEMENTS + " AS b ON a.ID=b.SERIES_ID GROUP BY b.SERIES_ID";
         return getData(sql);
     }
 
@@ -501,7 +556,7 @@ public class DatabaseManager extends SQLiteOpenHelper{
         }
         for(int i=1;i<arrays;i++)
         {
-           ret=getIntegerIntersect(ret,a[i]);
+            ret=getIntegerIntersect(ret,a[i]);
         }
         return ret;
     }

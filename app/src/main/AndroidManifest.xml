@@ -16,11 +16,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Collection" />
         <activity android:name=".ShortList" />
         <activity android:name=".Websearch" />
         <activity android:name=".Series" />
         <activity android:name=".Movies" />
+        <activity android:name=".UserList" />
         <activity android:name=".list_element" />
         <activity android:name=".websearchList" />
         <activity android:name=".login"></activity>
