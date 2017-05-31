@@ -34,15 +34,14 @@ public class Movies extends AppCompatActivity implements View.OnClickListener {
 
         //View Lists
         if(v == lists){
-            Intent listIntent = new Intent(this, UserList.class);
-            listIntent.putExtra("type","Movies");
-            startActivity(listIntent);
+            //Intent collIntent = new Intent(this, Lists.class);
+            //startActivity(collIntent);
         }
 
         //start Collection
         if(v == collection){
             Intent collectionIntent = new Intent(this, ShortList.class);
-            collectionIntent.putExtra("type","Movies");
+            collectionIntent.putExtra("type","movies");
             startActivity(collectionIntent);
         }
 

@@ -18,7 +18,6 @@
         </activity>
         <activity android:name=".Collection" />
         <activity android:name=".ShortList" />
-        <activity android:name=".UserList" />
         <activity android:name=".Websearch" />
         <activity android:name=".Series" />
         <activity android:name=".Movies" />

@@ -31,7 +31,7 @@
         android:layout_marginTop="20dp"
         android:id="@+id/collection"
         style="?android:attr/borderlessButtonStyle"
-        android:layout_below="@id/myLists"
+        android:layout_below="@+id/myLists"
         android:layout_alignParentStart="true" />
 
 
@@ -44,6 +44,6 @@
         android:layout_marginTop="20dp"
         android:id="@+id/websearch"
         style="?android:attr/borderlessButtonStyle"
-        android:layout_below="@id/collection"
+        android:layout_below="@+id/collection"
         android:layout_alignParentStart="true" />
 </RelativeLayout>

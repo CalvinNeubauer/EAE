@@ -23,14 +23,14 @@ public class ShortList extends AppCompatActivity {
         type = myIntent.getStringExtra("type");
 
         db = DatabaseManager.getInstance(this);
-        listView = (ListView)findViewById(R.id.short_list_view);
+        listView = (ListView)findViewById(R.id.mein_list_view);
 
         Context ctx = this;
         int ItemLayout = R.layout.element_shortlist;
         Cursor cursor;
 
         //Bestimmung der Liste
-        if(type.equals("Movies")){
+        if(type.equals("movies")){
             cursor = db.getAllMovies();
             from = new String[] {DatabaseManager.COLUMN_TITLE, DatabaseManager.COLUMN_DURATION, DatabaseManager.COLUMN_RATING};
         }
