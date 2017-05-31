@@ -10,11 +10,10 @@
     android:background="@color/background"
     tools:context="de.kl.fh.moviestar.ShortList">
 
-
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/mein_list_view"
+        android:id="@+id/short_list_view"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
         android:divider="@color/divider"
