@@ -25,7 +25,7 @@ public class DatabaseManager extends SQLiteOpenHelper{
 
     //Table
     private static final String TABLE_MOVIES = "Movies";
-    private static final String COLUMN_ID = "id";
+    public static final String COLUMN_ID = "id";
     public static final String COLUMN_TITLE = "title";
     public static final String COLUMN_RATING = "rating";
     public static final String COLUMN_DURATION = "duration";

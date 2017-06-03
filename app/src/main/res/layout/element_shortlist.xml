@@ -59,5 +59,10 @@
             android:textSize="18sp"
             android:textColor="@color/letter"/>
 
+        <TextView
+            android:layout_width="0px"
+            android:layout_height="0px"
+            android:id="@+id/title_id"/>
+
     </RelativeLayout>
 </LinearLayout>
