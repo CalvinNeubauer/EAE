@@ -449,6 +449,12 @@ public class DatabaseManager extends SQLiteOpenHelper{
         return point;
     }
 
+    public Cursor getMovieByID(String id)
+    {
+        String sql = "SELECT ROWID AS _id, TITLE, RATING, DURATION, RELEASE, DESCRIPTION_EN, DESCRIPTION_DE, SEQUEL_OF, WATCHED FROM "+TABLE_MOVIES +" WHERE "+COLUMN_ID+"="+id;
+        return getData(sql);
+    }
+
     public Cursor getAllMovies()
     {
         String sql = "SELECT ROWID AS _id, TITLE, RATING, DURATION, RELEASE, DESCRIPTION_EN, DESCRIPTION_DE, SEQUEL_OF, WATCHED FROM "+TABLE_MOVIES;
