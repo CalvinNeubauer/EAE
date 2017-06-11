@@ -10,27 +10,15 @@
     android:background="@color/background"
     tools:context="de.kl.fh.moviestar.UserList">
 
-    <!--
-    <TextView
-        android:id="@+id/label_add"
-        android:layout_width="wrap_content"
+    <Button
+        android:id="@+id/add_button"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="New List"
+        android:text="@string/newList"
         android:textSize="30dp"
         android:textColor="@color/letter"
-        android:textStyle="bold"
+        android:background="@color/slate"
         android:layout_centerHorizontal="true"/>
-    -->
-
-    <ImageButton
-        android:id="@+id/add_button"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:background="@drawable/plus_button"
-        android:layout_marginRight="20dp"
-        android:layout_marginBottom="40dp"
-        android:layout_alignParentRight="true"
-        android:scaleType="center"/>
 
     <ListView
         android:layout_width="match_parent"

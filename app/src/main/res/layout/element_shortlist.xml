@@ -36,7 +36,7 @@
             android:stepSize="0.1"
             android:layout_below="@id/title_name"
             android:layout_alignParentLeft="true"
-            android:backgroundTint="#f00"
+            android:backgroundTint="#000"
             android:progressTint="#0f0"
             android:secondaryProgressTint="#000"/>
 

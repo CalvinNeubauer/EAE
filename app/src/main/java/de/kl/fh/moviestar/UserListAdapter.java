@@ -17,7 +17,7 @@ public class UserListAdapter extends CursorAdapter {
 
     //Variabeln
     private LayoutInflater myLayoutInflater;
-    private int layout;
+    private int layout,id;
     private String[] from;
     private int[] to;
     private String type;
