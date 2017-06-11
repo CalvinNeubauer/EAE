@@ -564,7 +564,7 @@ public class DatabaseManager extends SQLiteOpenHelper{
 
     public Integer[] getMovieIDsByTitle(String title)
     {
-        String sql = "SELECT ID AS MOVIE_ID AS _id  FROM "+TABLE_MOVIES + " a WHERE UPPER(a.TITLE) LIKE ?";
+        String sql = "SELECT ID AS _id  FROM "+TABLE_MOVIES + " a WHERE UPPER(a.TITLE) LIKE ?";
         Cursor c = getData(sql, new String[]{title});
         Integer[] ret = new Integer[c.getCount()];
         int i = 0;
@@ -680,7 +680,7 @@ public class DatabaseManager extends SQLiteOpenHelper{
 
     public Integer[] getSeriesIDsByTitle(String title)
     {
-        String sql = "SELECT ID AS SERIES_ID FROM "+TABLE_SERIES+" a WHERE UPPER(a.TITLE) LIKE ?";
+        String sql = "SELECT ID AS _id FROM "+TABLE_SERIES+" a WHERE UPPER(a.TITLE) LIKE ?";
         Cursor c = getData(sql,new String[]{title});
         Integer[] ret = new Integer[c.getCount()];
         int i = 0;
@@ -696,7 +696,7 @@ public class DatabaseManager extends SQLiteOpenHelper{
 
     public Integer[] getSeriesIDsByActor(String actor)
     {
-        String sql = "SELECT a.SERIES_ID FROM "+TABLE_SERIES_ACTORS+" a JOIN "+TABLE_ACTORS+" b ON a.ACTOR_ID=b.ID WHERE UPPER(b.NAME) LIKE ?";
+        String sql = "SELECT a.SERIES_ID AS _id FROM "+TABLE_SERIES_ACTORS+" a JOIN "+TABLE_ACTORS+" b ON a.ACTOR_ID=b.ID WHERE UPPER(b.NAME) LIKE ?";
         Cursor c = getData(sql,new String[]{actor});
         Integer[] ret = new Integer[c.getCount()];
         int i = 0;
@@ -712,7 +712,7 @@ public class DatabaseManager extends SQLiteOpenHelper{
 
     public Integer[] getSeriesIDByCreator(String creator)
     {
-        String sql = "SELECT a.SERIES_ID FROM "+TABLE_SERIES_CREATORS+" a JOIN "+TABLE_CREATORS+" b ON a.CREATOR_ID=b.ID WHERE UPPER(b.NAME) LIKE ?";
+        String sql = "SELECT a.SERIES_ID AS _id FROM "+TABLE_SERIES_CREATORS+" a JOIN "+TABLE_CREATORS+" b ON a.CREATOR_ID=b.ID WHERE UPPER(b.NAME) LIKE ?";
         Cursor c = getData(sql,new String[]{creator});
         Integer[] ret = new Integer[c.getCount()];
         int i = 0;
