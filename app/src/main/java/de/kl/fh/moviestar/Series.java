@@ -35,7 +35,7 @@ public class Series extends AppCompatActivity implements View.OnClickListener {
         //View Lists
         if(v == lists){
             Intent listIntent = new Intent(this, UserList.class);
-            listIntent.putExtra("type","Movies");
+            listIntent.putExtra("type","Series");
             startActivity(listIntent);
         }
 

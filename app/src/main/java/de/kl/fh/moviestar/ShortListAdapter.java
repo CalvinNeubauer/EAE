@@ -45,14 +45,14 @@ public class ShortListAdapter extends CursorAdapter {
         titleName.setText(name);
 
         //define duration/seasons
-        if(type.equals("movies")) {
+        if(type.equals("Movies")) {
             int duration = cursor.getInt(cursor.getColumnIndex(from[1]));
             TextView titleDuration = (TextView) view.findViewById(to[1]);
             int minutes = duration % 60;
             int hours = (duration - minutes) / 60;
             titleDuration.setText(hours + "h " + minutes + "m");
         }
-        else if(type.equals("series"))
+        else if(type.equals("Series"))
         {
             int seasons = cursor.getInt(cursor.getColumnIndex(from[1]));
             TextView titleSeasons = (TextView) view.findViewById(to[1]);
