@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 public class SingleMovie extends AppCompatActivity {
 
-    private String ID;
+   // private int ID;
     private DatabaseManager db;
 
     @Override
@@ -17,14 +17,15 @@ public class SingleMovie extends AppCompatActivity {
         setContentView(R.layout.activity_single_movie);
 
         Intent myIntent = getIntent();
-        ID = myIntent.getStringExtra("ID");
+        //ID =Integer.parseInt( myIntent.getStringExtra("ID"));
+
 
         fillXML();
     }
 
     private void fillXML (){
         db = DatabaseManager.getInstance(this);
-        Cursor cursor = db.getMovieByID(ID);
+        Cursor cursor = db.getMovieDataByID(2);
 
         String name = cursor.getString(cursor.getColumnIndex(DatabaseManager.COLUMN_NAME));
         TextView titleName = (TextView) this.findViewById(R.id.Name);

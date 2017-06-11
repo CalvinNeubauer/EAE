@@ -62,7 +62,8 @@
         <TextView
             android:layout_width="0px"
             android:layout_height="0px"
-            android:id="@+id/title_id"/>
+            android:id="@+id/title_id"
+            />
 
     </RelativeLayout>
 </LinearLayout>

@@ -68,6 +68,11 @@ public class ShortListAdapter extends CursorAdapter {
         TextView ratingText = (TextView) view.findViewById(to[3]);
         ratingText.setText(""+rating);
 
+        //define ID
+        String Id = cursor.getString(cursor.getColumnIndex(from[3]));
+        TextView Idview = (TextView) view.findViewById(to[4]);
+        Idview.setText(Id);
+
     }
 
     public ShortListAdapter(Context context, int layout, Cursor c, String[] from, int[] to, String type, int flags){
