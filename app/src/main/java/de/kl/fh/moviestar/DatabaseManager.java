@@ -29,8 +29,8 @@ public class DatabaseManager extends SQLiteOpenHelper{
     public static final String COLUMN_TITLE = "title";
     public static final String COLUMN_RATING = "rating";
     public static final String COLUMN_DURATION = "duration";
-    private static final String COLUMN_RELEASE = "release";
-    private static final String COLUMN_DESC_EN = "description_en";
+    public static final String COLUMN_RELEASE = "release";
+    public static final String COLUMN_DESC_EN = "description_en";
     private static final String COLUMN_DESC_DE = "description_de";
     private static final String COLUMN_SEQUEL_OF = "sequel_of";
     private static final String COLUMN_WATCHED = "watched";              //Muss 1 oder 0 sein
