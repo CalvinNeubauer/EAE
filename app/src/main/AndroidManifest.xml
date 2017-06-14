@@ -27,6 +27,7 @@
         <activity android:name=".websearchList" />
         <activity android:name=".login" />
         <activity android:name=".SingleMovie"></activity>
+        <activity android:name=".NewList"></activity>
     </application>
 
 </manifest>

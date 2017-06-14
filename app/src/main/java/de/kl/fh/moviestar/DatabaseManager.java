@@ -172,14 +172,14 @@ public class DatabaseManager extends SQLiteOpenHelper{
         db.execSQL(
                 "CREATE TABLE " + TABLE_MOVIE_LISTS + "(" +
                         COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                        COLUMN_NAME + " TEXT NOT NULL " +
+                        COLUMN_NAME + " TEXT NOT NULL UNIQUE " +
                         ")"
         );
 
         db.execSQL(
                 "CREATE TABLE " + TABLE_SERIES_LISTS + "(" +
                         COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                        COLUMN_NAME + " TEXT NOT NULL " +
+                        COLUMN_NAME + " TEXT NOT NULL UNIQUE" +
                         ")"
         );
 
@@ -402,7 +402,7 @@ public class DatabaseManager extends SQLiteOpenHelper{
         );
     }
 
-    private void addMovieList(String name)
+    public void addMovieList(String name)
     {
         database.execSQL(
                 "INSERT INTO " + TABLE_MOVIE_LISTS + " (NAME) VALUES ("+
@@ -411,11 +411,11 @@ public class DatabaseManager extends SQLiteOpenHelper{
         );
     }
 
-    private void addSeriesList(String name)
+    public void addSeriesList(String name)
     {
         database.execSQL(
                 "INSERT INTO " + TABLE_SERIES_LISTS + " (NAME) VALUES ("+
-                        name
+                        "'"+name+"'"
                         + ")"
         );
     }
@@ -471,25 +471,25 @@ public class DatabaseManager extends SQLiteOpenHelper{
 
     public Cursor getAllMovies()
     {
-        String sql = "SELECT ROWID AS _id, TITLE, RATING, DURATION, RELEASE, DESCRIPTION_EN, DESCRIPTION_DE, SEQUEL_OF, WATCHED FROM "+TABLE_MOVIES;
+        String sql = "SELECT ROWID AS _id, TITLE, RATING, DURATION, RELEASE, DESCRIPTION_EN, DESCRIPTION_DE, SEQUEL_OF, WATCHED FROM "+TABLE_MOVIES+" ORDER BY TITLE";
         return getData(sql);
     }
 
     public Cursor getAllSeries()
     {
-        String sql = "SELECT ROWID AS _id, TITLE, RATING, SEASONS, RELEASE, DESCRIPTION_EN, DESCRIPTION_DE FROM "+TABLE_SERIES;
+        String sql = "SELECT ROWID AS _id, TITLE, RATING, SEASONS, RELEASE, DESCRIPTION_EN, DESCRIPTION_DE FROM "+TABLE_SERIES+" ORDER BY TITLE";
         return getData(sql);
     }
 
     public Cursor getMovieLists()
     {
-        String sql = "SELECT ID AS _id, NAME, COUNT(MOVIE_LIST_ID) AS MOVIES FROM " + TABLE_MOVIE_LISTS + " JOIN (SELECT MOVIE_LIST_ID FROM " + TABLE_MOVIE_LISTS_ELEMENTS + ") ON ID=MOVIE_LIST_ID  GROUP BY _id, NAME";
+        String sql = "SELECT ID AS _id, NAME, COUNT(MOVIE_LIST_ID) AS MOVIES FROM " + TABLE_MOVIE_LISTS + " LEFT JOIN (SELECT MOVIE_LIST_ID FROM " + TABLE_MOVIE_LISTS_ELEMENTS + ") ON ID=MOVIE_LIST_ID  GROUP BY _id, NAME ORDER BY NAME";
         return getData(sql);
     }
 
     public Cursor getSeriesLists()
     {
-        String sql = "SELECT ID AS _id, NAME, COUNT(SERIES_LIST_ID) AS SERIES FROM " + TABLE_SERIES_LISTS + " JOIN (SELECT SERIES_LIST_ID FROM " + TABLE_SERIES_LISTS_ELEMENTS + ") ON ID=SERIES_LIST_ID GROUP BY _id, NAME";
+        String sql = "SELECT ID AS _id, NAME, COALESCE(COUNT(SERIES_LIST_ID),0) AS SERIES FROM " + TABLE_SERIES_LISTS + " LEFT JOIN (SELECT SERIES_LIST_ID FROM " + TABLE_SERIES_LISTS_ELEMENTS + ") ON ID=SERIES_LIST_ID GROUP BY _id, NAME ORDER BY NAME";
         return getData(sql);
     }
 

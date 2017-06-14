@@ -37,7 +37,7 @@ public class UserListAdapter extends CursorAdapter {
         //define name
         String name = cursor.getString(cursor.getColumnIndex(from[0]));
         int items = cursor.getInt(cursor.getColumnIndex(from[1]));
-        if(name!=null && items!=0) {
+        if(name!=null) {
             TextView listName = (TextView) view.findViewById(to[0]);
             listName.setText(name);
 

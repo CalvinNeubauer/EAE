@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -28,6 +29,16 @@ public class ShortList extends AppCompatActivity {
         Intent myIntent = getIntent();
         type = myIntent.getStringExtra("type");
         listName = myIntent.getStringExtra("listName");
+
+
+        Button editButton = (Button) findViewById(R.id.edit_button);
+        if(listName==null || listName.isEmpty())
+        {
+            editButton.setVisibility(View.GONE);
+        }
+        else {
+            editButton.setVisibility(View.VISIBLE);
+        }
 
         db = DatabaseManager.getInstance(this);
         listView = (ListView) findViewById(R.id.short_list_view);
@@ -61,8 +72,14 @@ public class ShortList extends AppCompatActivity {
 
         } else {
             if (!listName.isEmpty()) {
-                cursor = db.getMoviesFromList(listName);
-                from = new String[]{DatabaseManager.COLUMN_TITLE, DatabaseManager.COLUMN_DURATION, DatabaseManager.COLUMN_RATING, "_id"};
+                if(type.equals("Movies")) {
+                    cursor = db.getMoviesFromList(listName);
+                    from = new String[]{DatabaseManager.COLUMN_TITLE, DatabaseManager.COLUMN_DURATION, DatabaseManager.COLUMN_RATING, "_id"};
+                }
+                else if(type.equals("Series")) {
+                    cursor = db.getSeriesFromList(listName);
+                    from = new String[]{DatabaseManager.COLUMN_TITLE, DatabaseManager.COLUMN_SEASONS, DatabaseManager.COLUMN_RATING, "_id"};
+                }
                 to = new int[]{R.id.title_name, R.id.title_duration, R.id.title_rating, R.id.title_rating_text, R.id.title_id};
 
             }

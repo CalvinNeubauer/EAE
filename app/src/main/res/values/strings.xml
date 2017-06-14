@@ -10,5 +10,8 @@
     <string name="year">Year</string>
     <string name="search">Search</string>
     <string name="myLists">My Lists</string>
+    <string name="name">Name</string>
     <string name="newList">New List</string>
+    <string name="addList">Add List</string>
+    <string name="editList">Edit List</string>
 </resources>
