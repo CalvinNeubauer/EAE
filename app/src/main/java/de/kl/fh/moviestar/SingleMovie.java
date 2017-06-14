@@ -9,7 +9,9 @@ import android.widget.TextView;
 public class SingleMovie extends AppCompatActivity {
 
     private int ID;
+    private String type;
     private DatabaseManager db;
+    private Cursor cursor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,7 +19,8 @@ public class SingleMovie extends AppCompatActivity {
         setContentView(R.layout.activity_single_movie);
 
         Intent myIntent = getIntent();
-        ID =Integer.parseInt( myIntent.getStringExtra("ID"));
+        ID=myIntent.getIntExtra("ID",-1);
+        type=myIntent.getStringExtra("type");
 
 
         fillXML();
@@ -25,7 +28,10 @@ public class SingleMovie extends AppCompatActivity {
 
     private void fillXML (){
         db = DatabaseManager.getInstance(this);
-        Cursor cursor = db.getMovieDataByID(2);
+        if(type.equals("Episodes"))
+            cursor = db.getEpisodeDataByID(ID);
+        else if(type.equals("Movies"))
+            cursor = db.getMovieDataByID(ID);
 
         String name = cursor.getString(cursor.getColumnIndex(DatabaseManager.COLUMN_TITLE));
         TextView titleName = (TextView) this.findViewById(R.id.Name);
