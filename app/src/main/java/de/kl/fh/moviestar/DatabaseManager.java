@@ -52,9 +52,9 @@ public class DatabaseManager extends SQLiteOpenHelper{
     private static final String COLUMN_SERIES_ID = "series_id";
 
     private static final String TABLE_SERIES_SEASONS = "Series_Seasons";
-    private static final String COLUMN_SEASON = "Season";
+    public static final String COLUMN_SEASON = "Season";
     private static final String TABLE_SEASON_EPISODES = "Season_Episodes";
-    private static final String COLUMN_SEASON_ID = "Season_Id";
+    public static final String COLUMN_SEASON_ID = "Season_Id";
     private static final String COLUMN_EPISODE_ID = "Episode_Id";
     private static final String TABLE_EPISODES = "Episodes";
 
@@ -172,14 +172,14 @@ public class DatabaseManager extends SQLiteOpenHelper{
         db.execSQL(
                 "CREATE TABLE " + TABLE_MOVIE_LISTS + "(" +
                         COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                        COLUMN_NAME + " TEXT NOT NULL " +
+                        COLUMN_NAME + " TEXT NOT NULL UNIQUE " +
                         ")"
         );
 
         db.execSQL(
                 "CREATE TABLE " + TABLE_SERIES_LISTS + "(" +
                         COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                        COLUMN_NAME + " TEXT NOT NULL " +
+                        COLUMN_NAME + " TEXT NOT NULL UNIQUE" +
                         ")"
         );
 
@@ -288,17 +288,15 @@ public class DatabaseManager extends SQLiteOpenHelper{
 
         insertSeriesIntoDatabase("The Big Bang Theory", 4.3, 8, "2007");
         insertSeriesIntoDatabase("Breaking Bad", 4.9, 8, "2008");
-        for(int i=1;i<=8;i++) {
-            insertSeasonsIntoDatabase(getSeriesIDsByTitle("The Big Bang Theory")[0], i);
-        }
-        for(int i=1;i<=5;i++) {
-            insertSeasonsIntoDatabase(getSeriesIDsByTitle("Breaking Bad")[0], i);
-        }
 
         addMovieList("Watch List");
         addMovieToList("Watch List", "Fast & Furious 8");
         addMovieToList("Watch List", "Guardians of the Galaxy");
         addMovieToList("Watch List", "Guardians of the Galaxy Vol. 2");
+        addEpisodesToSeason("The Big Bang Theory",1,21);
+        addEpisodesToSeason("The Big Bang Theory",2,20);
+        addEpisodesToSeason("The Big Bang Theory",3,19);
+        addEpisodesToSeason("The Big Bang Theory",4,18);
     }
 
     @Override
@@ -348,6 +346,14 @@ public class DatabaseManager extends SQLiteOpenHelper{
                         "'"+release+"'"
                         + ")"
         );
+        for(int i=1;i<=seasons;i++) {
+            database.execSQL(
+                    "INSERT INTO " + TABLE_SERIES_SEASONS + " (SERIES_ID,SEASON) VALUES (" +
+                            "(SELECT ID FROM SERIES WHERE TITLE LIKE '"+title+"')" + "," +
+                            i
+                            + ")"
+            );
+        }
     }
 
     private void insertSeasonsIntoDatabase(int series_id, int season_number)
@@ -396,7 +402,7 @@ public class DatabaseManager extends SQLiteOpenHelper{
         );
     }
 
-    private void addMovieList(String name)
+    public void addMovieList(String name)
     {
         database.execSQL(
                 "INSERT INTO " + TABLE_MOVIE_LISTS + " (NAME) VALUES ("+
@@ -405,11 +411,11 @@ public class DatabaseManager extends SQLiteOpenHelper{
         );
     }
 
-    private void addSeriesList(String name)
+    public void addSeriesList(String name)
     {
         database.execSQL(
                 "INSERT INTO " + TABLE_SERIES_LISTS + " (NAME) VALUES ("+
-                        name
+                        "'"+name+"'"
                         + ")"
         );
     }
@@ -434,6 +440,19 @@ public class DatabaseManager extends SQLiteOpenHelper{
         );
     }
 
+    private void addEpisodesToSeason(String series,int season, int num)
+    {
+        String title;
+        for(int i=1;i<=num;i++) {
+            title = "S"+season+" E"+i;
+            database.execSQL(
+                    "INSERT INTO " + TABLE_EPISODES + " (TITLE) VALUES ('"+title+"')"
+            );
+        }
+        database.execSQL("INSERT INTO " + TABLE_SEASON_EPISODES + " (SEASON_ID,EPISODE_ID) "+
+                "SELECT a.ID, b.id FROM (SELECT ID FROM "+TABLE_SERIES_SEASONS+" WHERE SERIES_ID=(SELECT ID FROM "+TABLE_SERIES+" WHERE TITLE LIKE 'The Big Bang Theory') AND SEASON="+season+") a JOIN "+TABLE_EPISODES+" b WHERE b.TITLE LIKE 'S"+season+"%'"
+        );
+    }
 
     //------GET DATA------------------------------------------------------------------------------------------------------------
     public Cursor getData(String sql)
@@ -452,25 +471,25 @@ public class DatabaseManager extends SQLiteOpenHelper{
 
     public Cursor getAllMovies()
     {
-        String sql = "SELECT ROWID AS _id, TITLE, RATING, DURATION, RELEASE, DESCRIPTION_EN, DESCRIPTION_DE, SEQUEL_OF, WATCHED FROM "+TABLE_MOVIES;
+        String sql = "SELECT ROWID AS _id, TITLE, RATING, DURATION, RELEASE, DESCRIPTION_EN, DESCRIPTION_DE, SEQUEL_OF, WATCHED FROM "+TABLE_MOVIES+" ORDER BY TITLE";
         return getData(sql);
     }
 
     public Cursor getAllSeries()
     {
-        String sql = "SELECT ROWID AS _id, TITLE, RATING, SEASONS, RELEASE, DESCRIPTION_EN, DESCRIPTION_DE FROM "+TABLE_SERIES;
+        String sql = "SELECT ROWID AS _id, TITLE, RATING, SEASONS, RELEASE, DESCRIPTION_EN, DESCRIPTION_DE FROM "+TABLE_SERIES+" ORDER BY TITLE";
         return getData(sql);
     }
 
     public Cursor getMovieLists()
     {
-        String sql = "SELECT ID AS _id, NAME, COUNT(MOVIE_LIST_ID) AS MOVIES FROM " + TABLE_MOVIE_LISTS + " JOIN (SELECT MOVIE_LIST_ID FROM " + TABLE_MOVIE_LISTS_ELEMENTS + ") ON ID=MOVIE_LIST_ID  GROUP BY _id, NAME";
+        String sql = "SELECT ID AS _id, NAME, COUNT(MOVIE_LIST_ID) AS MOVIES FROM " + TABLE_MOVIE_LISTS + " LEFT JOIN (SELECT MOVIE_LIST_ID FROM " + TABLE_MOVIE_LISTS_ELEMENTS + ") ON ID=MOVIE_LIST_ID  GROUP BY _id, NAME ORDER BY NAME";
         return getData(sql);
     }
 
     public Cursor getSeriesLists()
     {
-        String sql = "SELECT ID AS _id, NAME, COUNT(SERIES_LIST_ID) AS SERIES FROM " + TABLE_SERIES_LISTS + " JOIN (SELECT SERIES_LIST_ID FROM " + TABLE_SERIES_LISTS_ELEMENTS + ") ON ID=SERIES_LIST_ID GROUP BY _id, NAME";
+        String sql = "SELECT ID AS _id, NAME, COALESCE(COUNT(SERIES_LIST_ID),0) AS SERIES FROM " + TABLE_SERIES_LISTS + " LEFT JOIN (SELECT SERIES_LIST_ID FROM " + TABLE_SERIES_LISTS_ELEMENTS + ") ON ID=SERIES_LIST_ID GROUP BY _id, NAME ORDER BY NAME";
         return getData(sql);
     }
 
@@ -486,10 +505,16 @@ public class DatabaseManager extends SQLiteOpenHelper{
         return getData(sql,new String[]{listName});
     }
 
-    public Cursor getEpisodesFromSeason(int season, String series)
+    public Cursor getSeasonsFromSeries(int series_id)
     {
-        String sql = "SELECT a.ID AS _id, a.TITLE AS "+COLUMN_TITLE+", a.DURATION AS "+COLUMN_DURATION+", a.DESCRIPTION_EN AS "+COLUMN_DESC_EN+", a.DESCRIPTION_DE AS "+COLUMN_DESC_DE+", a.SEQUEL_OF AS "+COLUMN_SEQUEL_OF+" FROM "+TABLE_EPISODES+" a JOIN (SELECT EPISODE_ID FROM "+TABLE_SEASON_EPISODES+"a JOIN "+TABLE_SERIES_SEASONS+" b ON a.SEASON_ID=b.ID WHERE b.SEASON=? AND b.SERIES_ID=(SELECT ID FROM "+TABLE_SERIES+" WHERE UPPER(b.TITLE) LIKE ?) b ON a.ID=b.EPISODE_ID";
-        return getData(sql,new String[]{String.valueOf(season),series});
+        String sql = "SELECT a.ID AS _id, b."+COLUMN_SEASON_ID+" AS "+COLUMN_SEASON_ID+", b.Episodes AS Episodes FROM "+TABLE_SERIES_SEASONS+" a JOIN (SELECT "+COLUMN_SEASON_ID+", COUNT("+COLUMN_EPISODE_ID+") AS Episodes FROM "+TABLE_SEASON_EPISODES+" GROUP BY "+COLUMN_SEASON_ID+") b ON b."+COLUMN_SEASON_ID+"=a."+COLUMN_SEASON+" WHERE "+COLUMN_SERIES_ID+"=?";
+        return getData(sql,new String[]{String.valueOf(series_id)});
+    }
+
+    public Cursor getEpisodesFromSeason(int season_id)
+    {
+        String sql = "SELECT a.ID AS _id, a.TITLE AS "+COLUMN_TITLE+", a.DURATION AS "+COLUMN_DURATION+", a.DESCRIPTION_EN AS "+COLUMN_DESC_EN+", a.DESCRIPTION_DE AS "+COLUMN_DESC_DE+", a.SEQUEL_OF AS "+COLUMN_SEQUEL_OF+" FROM "+TABLE_EPISODES+" a JOIN (SELECT EPISODE_ID FROM "+TABLE_SEASON_EPISODES+" a JOIN "+TABLE_SERIES_SEASONS+" b ON a.SEASON_ID=b.ID WHERE b.ID=?) b WHERE a.ID=b.EPISODE_ID ORDER BY _id";
+        return getData(sql,new String[]{String.valueOf(season_id)});
     }
 
     public Cursor getNumberOfSeasons(String series)
@@ -630,21 +655,21 @@ public class DatabaseManager extends SQLiteOpenHelper{
     public Cursor getMovieDataByID(int id)
     {
         String sql = "SELECT "+COLUMN_ID+" AS _id, "+COLUMN_TITLE+", "+COLUMN_RATING+", "+COLUMN_DURATION+", "+COLUMN_RELEASE+", "+COLUMN_DESC_EN+", "+COLUMN_DESC_DE+", "+COLUMN_SEQUEL_OF+", "+COLUMN_WATCHED+" FROM "+TABLE_MOVIES+" WHERE "+COLUMN_ID+"=?";
-        Cursor c = getData(sql,new String[]{""+id});
+        Cursor c = getData(sql,new String[]{String.valueOf(id)});
         return c;
     }
 
     public Cursor getSeriesDataByID(int id)
     {
         String sql = "SELECT "+COLUMN_ID+" AS _id, "+COLUMN_TITLE+", "+COLUMN_RATING+", "+COLUMN_SEASONS+", "+COLUMN_RELEASE+", "+COLUMN_DESC_EN+", "+COLUMN_DESC_DE+" FROM "+TABLE_SERIES+" WHERE "+COLUMN_ID+"=?";
-        Cursor c = getData(sql,new String[]{""+id});
+        Cursor c = getData(sql,new String[]{String.valueOf(id)});
         return c;
     }
 
     public Cursor getEpisodeDataByID(int id)
     {
-        String sql = "SELECT "+COLUMN_ID+" AS _id, "+COLUMN_TITLE+", "+COLUMN_DURATION+", "+COLUMN_DESC_EN+", "+COLUMN_DESC_DE+", "+COLUMN_SEQUEL_OF+", "+COLUMN_WATCHED+" FROM "+TABLE_EPISODES+" WHERE "+COLUMN_ID+"=?";
-        Cursor c = getData(sql,new String[]{""+id});
+        String sql = "SELECT "+COLUMN_ID+" AS _id, "+COLUMN_TITLE+", "+COLUMN_DURATION+", "+COLUMN_DESC_EN+", "+COLUMN_DESC_DE+", "+COLUMN_SEQUEL_OF+" FROM "+TABLE_EPISODES+" WHERE "+COLUMN_ID+"=?";
+        Cursor c = getData(sql,new String[]{String.valueOf(id)});
         return c;
     }
 
