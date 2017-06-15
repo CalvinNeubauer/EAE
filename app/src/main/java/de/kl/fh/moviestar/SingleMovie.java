@@ -4,14 +4,17 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
-public class SingleMovie extends AppCompatActivity {
+public class SingleMovie extends AppCompatActivity implements View.OnClickListener{
 
     private int ID;
     private String type;
     private DatabaseManager db;
     private Cursor cursor;
+    private Button Listadd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +24,8 @@ public class SingleMovie extends AppCompatActivity {
         Intent myIntent = getIntent();
         ID=myIntent.getIntExtra("ID",-1);
         type=myIntent.getStringExtra("type");
+        Listadd = (Button) findViewById(R.id.AddToListButton);
+        Listadd.setOnClickListener(this);
 
 
         fillXML();
@@ -37,5 +42,13 @@ public class SingleMovie extends AppCompatActivity {
         TextView titleName = (TextView) this.findViewById(R.id.Name);
         titleName.setText(name);
 
+    }
+
+    @Override
+    public void onClick(View v) {
+        Intent ListIntent = new Intent(this,UserList.class);
+        ListIntent.putExtra("Id",ID);
+        ListIntent.putExtra("type", type);
+        startActivity(ListIntent);
     }
 }

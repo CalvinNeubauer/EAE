@@ -77,4 +77,13 @@
         android:layout_below="@+id/Desc"
         android:layout_alignStart="@+id/Desc"
         android:layout_marginTop="19dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add to list"
+        android:id="@+id/AddToListButton"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="52dp" />
 </RelativeLayout>
