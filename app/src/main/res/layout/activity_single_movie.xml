@@ -108,4 +108,13 @@
         android:layout_below="@+id/LabelDescription"
         android:layout_alignStart="@+id/LabelDescription"
         android:layout_marginTop="5dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add to List"
+        android:id="@+id/addToListButton"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="50dp"/>
 </RelativeLayout>

@@ -4,15 +4,18 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
-public class SingleMovie extends AppCompatActivity {
+public class SingleMovie extends AppCompatActivity implements View.OnClickListener {
 
     private int ID;
     private String type;
     private DatabaseManager db;
     private Cursor cursor;
+    private Button listAdd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,7 +25,8 @@ public class SingleMovie extends AppCompatActivity {
         Intent myIntent = getIntent();
         ID=myIntent.getIntExtra("ID",-1);
         type=myIntent.getStringExtra("type");
-
+        listAdd = (Button) findViewById(R.id.addToListButton);
+        listAdd.setOnClickListener(this);
 
         fillXML();
     }
@@ -65,5 +69,13 @@ public class SingleMovie extends AppCompatActivity {
         float rating = cursor.getFloat(cursor.getColumnIndex(DatabaseManager.COLUMN_RATING));
         RatingBar titleRating = (RatingBar) this.findViewById(R.id.ratingBar);
         titleRating.setRating(rating);
+    }
+
+    @Override
+    public void onClick(View v){
+        Intent listIntent = new Intent(this,UserList.class);
+        listIntent.putExtra("ID",ID);
+        listIntent.putExtra("type",type);
+        startActivity(listIntent);
     }
 }
