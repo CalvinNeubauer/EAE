@@ -11,8 +11,8 @@
     tools:context="de.kl.fh.moviestar.SingleMovie">
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="120dp"
+        android:layout_height="180dp"
         android:id="@+id/Image" />
 
     <TextView
@@ -21,10 +21,30 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Titel des Films"
         android:textColor="@color/letter"
+        android:layout_toEndOf="@id/Image"
         android:id="@+id/Name"
         android:layout_marginTop="23dp"
-        android:layout_below="@+id/Image"
+        android:layout_marginLeft="10dp"
         android:layout_centerHorizontal="true" />
+
+
+    <RatingBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="?android:attr/ratingBarStyleSmall"
+        android:scaleX="1.5"
+        android:scaleY="1.5"
+        android:transformPivotX="0dp"
+        android:transformPivotY="0dp"
+        android:id="@+id/ratingBar"
+        android:layout_below="@+id/Name"
+        android:layout_alignStart="@+id/Name"
+        android:layout_marginTop="10dp"
+        android:numStars="5"
+        android:stepSize="0.1"
+        android:backgroundTint="#000"
+        android:progressTint="#0f0"
+        android:secondaryProgressTint="#000"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -32,40 +52,51 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Release:"
         android:textColor="@color/letter"
-        android:id="@+id/Release"
+        android:id="@+id/LabelRelease"
+        android:layout_below="@+id/ratingBar"
         android:layout_marginTop="30dp"
-        android:layout_below="@+id/Name"
+        android:layout_alignStart="@+id/Name" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="@color/letter"
+        android:id="@+id/Release"
+        android:layout_below="@+id/LabelRelease"
         android:layout_alignStart="@+id/Name" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Date"
+        android:text="Runtime:"
         android:textColor="@color/letter"
-        android:id="@+id/ReleaseDate"
-        android:layout_alignBottom="@+id/Release"
-        android:layout_toEndOf="@+id/Release"
-        android:layout_marginStart="34dp" />
+        android:id="@+id/LabelRuntime"
+        android:layout_marginTop="30dp"
+        android:layout_below="@+id/ratingBar"
+        android:layout_toEndOf="@+id/LabelRelease"
+        android:layout_marginLeft="30dp"/>
 
-    <RatingBar
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/ratingBar"
-        android:layout_below="@+id/Release"
-        android:layout_alignStart="@+id/Release"
-        android:layout_marginTop="40dp" />
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="@color/letter"
+        android:id="@+id/Runtime"
+        android:layout_below="@+id/LabelRuntime"
+        android:layout_toEndOf="@+id/LabelRelease"
+        android:layout_marginLeft="30dp"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Description:"
+        android:text="Synopsis:"
         android:textColor="@color/letter"
-        android:id="@+id/Desc"
-        android:layout_below="@+id/ratingBar"
-        android:layout_toStartOf="@+id/ratingBar"
-        android:layout_marginTop="38dp" />
+        android:id="@+id/LabelDescription"
+        android:layout_below="@+id/Image"
+        android:layout_marginTop="10dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -74,7 +105,7 @@
         android:text="Lore Ipsum"
         android:textColor="@color/letter"
         android:id="@+id/Description"
-        android:layout_below="@+id/Desc"
-        android:layout_alignStart="@+id/Desc"
-        android:layout_marginTop="19dp" />
+        android:layout_below="@+id/LabelDescription"
+        android:layout_alignStart="@+id/LabelDescription"
+        android:layout_marginTop="5dp" />
 </RelativeLayout>

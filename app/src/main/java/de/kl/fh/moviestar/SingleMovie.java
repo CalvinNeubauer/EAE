@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 public class SingleMovie extends AppCompatActivity {
@@ -33,9 +34,36 @@ public class SingleMovie extends AppCompatActivity {
         else if(type.equals("Movies"))
             cursor = db.getMovieDataByID(ID);
 
-        String name = cursor.getString(cursor.getColumnIndex(DatabaseManager.COLUMN_TITLE));
-        TextView titleName = (TextView) this.findViewById(R.id.Name);
-        titleName.setText(name);
+        String title = cursor.getString(cursor.getColumnIndex(DatabaseManager.COLUMN_TITLE));
+        TextView textViewTitleName = (TextView) this.findViewById(R.id.Name);
+        textViewTitleName.setText(title);
 
+        String releaseDate = cursor.getString(cursor.getColumnIndex(DatabaseManager.COLUMN_RELEASE));
+        String day = releaseDate.substring(0,2);
+        String month = releaseDate.substring(2,4);
+        String year = releaseDate.substring(4,8);
+        TextView release = (TextView) this.findViewById(R.id.Release);
+        release.setText(day+"."+month+"."+year);
+
+        int duration = cursor.getInt(cursor.getColumnIndex(DatabaseManager.COLUMN_DURATION));
+        TextView textViewRuntime = (TextView) this.findViewById(R.id.Runtime);
+        int minutes = duration % 60;
+        int hours = (duration - minutes) / 60;
+        if(hours==0) {
+            textViewRuntime.setText(minutes + "m");
+        }
+        else
+        {
+            textViewRuntime.setText(hours + "h " + minutes + "m");
+        }
+
+        String description = cursor.getString(cursor.getColumnIndex(DatabaseManager.COLUMN_DESC_EN));
+        TextView textViewDescription = (TextView) this.findViewById(R.id.Description);
+        textViewDescription.setText(description);
+
+
+        float rating = cursor.getFloat(cursor.getColumnIndex(DatabaseManager.COLUMN_RATING));
+        RatingBar titleRating = (RatingBar) this.findViewById(R.id.ratingBar);
+        titleRating.setRating(rating);
     }
 }

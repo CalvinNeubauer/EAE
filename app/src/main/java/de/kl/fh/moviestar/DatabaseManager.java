@@ -280,23 +280,8 @@ public class DatabaseManager extends SQLiteOpenHelper{
                         " FOREIGN KEY ("+COLUMN_CREATOR_ID+") REFERENCES "+TABLE_CREATORS+"("+COLUMN_ID+")" +
                         ")"
         );
-
-        insertMovieIntoDatabase("Guardians of the Galaxy", 4.2, 117, "24042014");
-        insertMovieSequelIntoDatabase("Guardians of the Galaxy Vol. 2", 4.5, 136, "24042017", "Guardians of the Galaxy");
-        insertMovieIntoDatabase("Fast & Furious 8", 2.1, 125, "04042017");
-        setMovieToWatched(getMovieIDsByTitle("Fast & Furious 8")[0]);
-
-        insertSeriesIntoDatabase("The Big Bang Theory", 4.3, 8, "2007");
-        insertSeriesIntoDatabase("Breaking Bad", 4.9, 8, "2008");
-
-        addMovieList("Watch List");
-        addMovieToList("Watch List", "Fast & Furious 8");
-        addMovieToList("Watch List", "Guardians of the Galaxy");
-        addMovieToList("Watch List", "Guardians of the Galaxy Vol. 2");
-        addEpisodesToSeason("The Big Bang Theory",1,21);
-        addEpisodesToSeason("The Big Bang Theory",2,20);
-        addEpisodesToSeason("The Big Bang Theory",3,19);
-        addEpisodesToSeason("The Big Bang Theory",4,18);
+        
+        setBaseData();
     }
 
     @Override
@@ -369,54 +354,54 @@ public class DatabaseManager extends SQLiteOpenHelper{
     private void insertActorIntoDatabase(String name)
     {
         database.execSQL(
-                "INSERT INTO " + TABLE_ACTORS + " (NAME) VALUES ("+
+                "INSERT INTO " + TABLE_ACTORS + " (NAME) VALUES ('"+
                         name
-                        + ")"
+                        + "')"
         );
     }
 
     private void insertCreatorIntoDatabase(String name)
     {
         database.execSQL(
-                "INSERT INTO " + TABLE_CREATORS + " (NAME) VALUES ("+
+                "INSERT INTO " + TABLE_CREATORS + " (NAME) VALUES ('"+
                         name
-                        + ")"
+                        + "')"
         );
     }
 
     private void insertDirectorIntoDatabase(String name)
     {
         database.execSQL(
-                "INSERT INTO " + TABLE_DIRECTORS + " (NAME) VALUES ("+
+                "INSERT INTO " + TABLE_DIRECTORS + " (NAME) VALUES ('"+
                         name
-                        + ")"
+                        + "')"
         );
     }
 
     private void insertGenreIntoDatabase(String name)
     {
         database.execSQL(
-                "INSERT INTO " + TABLE_GENRES + " (NAME) VALUES ("+
+                "INSERT INTO " + TABLE_GENRES + " (NAME) VALUES ('"+
                         name
-                        + ")"
+                        + "')"
         );
     }
 
     public void addMovieList(String name)
     {
         database.execSQL(
-                "INSERT INTO " + TABLE_MOVIE_LISTS + " (NAME) VALUES ("+
-                        "'"+name+"'"
-                        + ")"
+                "INSERT INTO " + TABLE_MOVIE_LISTS + " (NAME) VALUES ('"+
+                        name
+                        + "')"
         );
     }
 
     public void addSeriesList(String name)
     {
         database.execSQL(
-                "INSERT INTO " + TABLE_SERIES_LISTS + " (NAME) VALUES ("+
-                        "'"+name+"'"
-                        + ")"
+                "INSERT INTO " + TABLE_SERIES_LISTS + " (NAME) VALUES ('"+
+                        name
+                        + "')"
         );
     }
 
@@ -452,6 +437,67 @@ public class DatabaseManager extends SQLiteOpenHelper{
         database.execSQL("INSERT INTO " + TABLE_SEASON_EPISODES + " (SEASON_ID,EPISODE_ID) "+
                 "SELECT a.ID, b.id FROM (SELECT ID FROM "+TABLE_SERIES_SEASONS+" WHERE SERIES_ID=(SELECT ID FROM "+TABLE_SERIES+" WHERE TITLE LIKE 'The Big Bang Theory') AND SEASON="+season+") a JOIN "+TABLE_EPISODES+" b WHERE b.TITLE LIKE 'S"+season+"%'"
         );
+    }
+
+    private void addDescENToMovie(int id, String description)
+    {
+        database.execSQL(
+                "UPDATE " + TABLE_MOVIES + " SET "+COLUMN_DESC_EN+" = '"+
+                        description.replaceAll("'","''")
+                        + "' WHERE ID = "+id
+        );
+    }
+
+    private void addActorsToMovie(int movie_id, int[] actors)
+    {
+        String sql = "INSERT INTO " + TABLE_MOVIE_ACTORS + " (MOVIE_ID,ACTOR_ID) VALUES ";
+        int i=0;
+        for (int j: actors) {
+            sql +="(" + movie_id + ", " + j + ")";
+            if(i<actors.length-1)
+                sql+=",";
+            i++;
+        }
+        database.execSQL(sql);
+    }
+    
+    private void addDirectorsToMovie(int movie_id, int[] directors)
+    {
+        String sql = "INSERT INTO " + TABLE_MOVIE_DIRECTORS + " (MOVIE_ID,DIRECTOR_ID) VALUES ";
+        int i=0;
+        for (int j: directors) {
+            sql +="(" + movie_id + ", " + j + ")";
+            if(i<directors.length-1)
+                sql+=",";
+            i++;
+        }
+        database.execSQL(sql);
+    }
+
+    private void addGenreToMovie(int movie_id, int[] genres)
+    {
+        String sql = "INSERT INTO " + TABLE_MOVIE_GENRES + " (MOVIE_ID,GENRE_ID) VALUES ";
+        int i=0;
+        for (int j: genres) {
+            sql +="(" + movie_id + ", " + j + ")";
+            if(i<genres.length-1)
+                sql+=",";
+            i++;
+        }
+        database.execSQL(sql);
+    }
+
+    private void addGenresToMovie(int movie_id, int[] genres)
+    {
+        String sql = "INSERT INTO " + TABLE_MOVIE_GENRES + " (MOVIE_ID,GENRE_ID) VALUES ";
+        int i=0;
+        for (int j: genres) {
+            sql +="(" + movie_id + ", " + j + ")";
+            if(i<genres.length-1)
+                sql+=",";
+            i++;
+        }
+        database.execSQL(sql);
     }
 
     //------GET DATA------------------------------------------------------------------------------------------------------------
@@ -792,4 +838,340 @@ public class DatabaseManager extends SQLiteOpenHelper{
         return ret;
     }
 
+    private int[] cursorToIntArray(Cursor c)
+    {
+        int i;
+        int[] ret = new int[c.getCount()];
+        i = 0;
+        while (!c.isAfterLast())
+        {
+            ret[i] = c.getInt(0);
+            i++;
+            c.moveToNext();
+        }
+        c.close();
+        return  ret;
+    }
+    
+    private int[] getActorIDs(String[] actors)
+    {
+        int i=0;
+        String sql = "SELECT ID AS _id FROM "+TABLE_ACTORS+" WHERE NAME IN (";
+        for (String s:actors){
+            sql+="'"+s+"'";
+            if(i<actors.length-1)
+                sql+=",";
+            i++;
+        }
+        sql+=")";
+        return cursorToIntArray(getData(sql));
+    }
+
+    private int[] getDirectorIDs(String[] directors)
+    {
+        int i=0;
+        String sql = "SELECT ID AS _id FROM "+TABLE_DIRECTORS+" WHERE NAME IN (";
+        for (String s:directors){
+            sql+="'"+s+"'";
+            if(i<directors.length-1)
+                sql+=",";
+            i++;
+        }
+        sql+=")";
+        return cursorToIntArray(getData(sql));
+    }
+
+    private int[] getGenreIDs(String[] genres)
+    {
+        int i=0;
+        String sql = "SELECT ID AS _id FROM "+TABLE_GENRES+" WHERE NAME IN (";
+        for (String s:genres){
+            sql+="'"+s+"'";
+            if(i<genres.length-1)
+                sql+=",";
+            i++;
+        }
+        sql+=")";
+        return cursorToIntArray(getData(sql));
+    }
+    
+    private void setBaseData()
+    {
+        //Base Movie Collection
+        insertMovieIntoDatabase("Batman Begins", 4.7, 140, "16062005");
+        insertMovieSequelIntoDatabase("Batman - The Dark Knight", 4.5, 152, "21082008", "Batman Begins");
+        insertMovieSequelIntoDatabase("Batman - The Dark Knight Rises", 4.8, 164, "26072012", "Batman - The Dark Knight");
+        insertMovieIntoDatabase("Sherlock Holmes", 3.4, 128, "28012010");
+        insertMovieSequelIntoDatabase("Sherlock Holmes: A Game of Shadows", 3.6, 128, "22122011", "Sherlock Holmes");
+        insertMovieIntoDatabase("Captain America: The First Avenger", 4.4, 124, "18082011");
+        insertMovieSequelIntoDatabase("Captain America: The Winter Soldier", 4.8, 136, "27032014", "Captain America: The First Avenger");
+        insertMovieSequelIntoDatabase("Captain America: Civil War", 4.3, 147, "28042016", "Captain America: The Winter Soldier");
+        insertMovieIntoDatabase("Guardians of the Galaxy", 4.2, 121, "28082014");
+        insertMovieSequelIntoDatabase("Guardians of the Galaxy Vol. 2", 4.5, 136, "24042017", "Guardians of the Galaxy");
+        insertMovieIntoDatabase("Doctor Strange", 4.2, 115, "27102016");
+        insertMovieIntoDatabase("The Avengers", 4.1, 143, "26042012");
+        insertMovieSequelIntoDatabase("Avengers: Age of Ultron", 4.2, 141, "23042015", "The Avengers");
+        insertMovieIntoDatabase("Thor", 3.9, 115, "28042011");
+        insertMovieSequelIntoDatabase("Thor: The Dark World", 3.2, 112, "31102013", "Thor");
+        insertMovieIntoDatabase("Deadpool", 4.9, 108, "11012016");
+        insertMovieIntoDatabase("Ant-Man", 4.8, 117, "23072015");
+        insertMovieIntoDatabase("The Incredible Hulk", 3.8, 112, "10072008");
+        insertMovieIntoDatabase("Iron Man", 4.6, 126, "01052008");
+        insertMovieSequelIntoDatabase("Iron Man 2", 4.5, 124, "06052010", "Iron Man");
+        insertMovieSequelIntoDatabase("Iron Man 3", 4.7, 130, "01052013", "Iron Man 2");
+
+        //Movie Descriptions
+        addDescENToMovie(getMovieIDsByTitle("Batman Begins")[0],"After training with his mentor, Batman begins his fight to free crime-ridden Gotham City from the corruption that Scarecrow and the League of Shadows have cast upon it.");
+        addDescENToMovie(getMovieIDsByTitle("Batman - The Dark Knight")[0],"When the menace known as the Joker emerges from his mysterious past, he wreaks havoc and chaos on the people of Gotham, the Dark Knight must accept one of the greatest psychological and physical tests of his ability to fight injustice.");
+        addDescENToMovie(getMovieIDsByTitle("Batman - The Dark Knight Rises")[0],"Eight years after the Joker's reign of anarchy, the Dark Knight, with the help of the enigmatic Selina, is forced from his imposed exile to save Gotham City, now on the edge of total annihilation, from the brutal guerrilla terrorist Bane.");
+        addDescENToMovie(getMovieIDsByTitle("Sherlock Holmes")[0],"Detective Sherlock Holmes and his stalwart partner Watson engage in a battle of wits and brawn with a nemesis whose plot is a threat to all of England.");
+        addDescENToMovie(getMovieIDsByTitle("Sherlock Holmes: A Game of Shadows")[0],"Sherlock Holmes and his sidekick Dr. Watson join forces to outwit and bring down their fiercest adversary, Professor Moriarty.");
+        addDescENToMovie(getMovieIDsByTitle("Captain America: The First Avenger")[0],"Steve Rogers, a rejected military soldier transforms into Captain America after taking a dose of a \"Super-Soldier serum\". But being Captain America comes at a price as he attempts to take down a war monger and a terrorist organization.");
+        addDescENToMovie(getMovieIDsByTitle("Captain America: The Winter Soldier")[0],"As Steve Rogers struggles to embrace his role in the modern world, he teams up with a fellow Avenger and S.H.I.E.L.D agent, Black Widow, to battle a new threat from history: an assassin known as the Winter Soldier.");
+        addDescENToMovie(getMovieIDsByTitle("Captain America: Civil War")[0],"Political interference in the Avengers' activities causes a rift between former allies Captain America and Iron Man.");
+        addDescENToMovie(getMovieIDsByTitle("Guardians of the Galaxy")[0],"A group of intergalactic criminals are forced to work together to stop a fanatical warrior from taking control of the universe.");
+        addDescENToMovie(getMovieIDsByTitle("Guardians of the Galaxy Vol. 2")[0],"The Guardians must fight to keep their newfound family together as they unravel the mystery of Peter Quill's true parentage.");
+        addDescENToMovie(getMovieIDsByTitle("Doctor Strange")[0],"While on a journey of physical and spiritual healing, a brilliant neurosurgeon is drawn into the world of the mystic arts.");
+        addDescENToMovie(getMovieIDsByTitle("The Avengers")[0],"Earth's mightiest heroes must come together and learn to fight as a team if they are to stop the mischievous Loki and his alien army from enslaving humanity.");
+        addDescENToMovie(getMovieIDsByTitle("Avengers: Age of Ultron")[0],"When Tony Stark and Bruce Banner try to jump-start a dormant peacekeeping program called Ultron, things go horribly wrong and it's up to Earth's mightiest heroes to stop the villainous Ultron from enacting his terrible plan.");
+        addDescENToMovie(getMovieIDsByTitle("Thor")[0],"The powerful but arrogant god Thor is cast out of Asgard to live amongst humans in Midgard (Earth), where he soon becomes one of their finest defenders.");
+        addDescENToMovie(getMovieIDsByTitle("Thor: The Dark World")[0],"When Dr. Jane Foster gets cursed with a powerful entity known as the Aether, Thor is heralded of the cosmic event known as the Convergence and the genocidal Dark Elves.");
+        addDescENToMovie(getMovieIDsByTitle("Deadpool")[0],"A fast-talking mercenary with a morbid sense of humor is subjected to a rogue experiment that leaves him with accelerated healing powers and a quest for revenge.");
+        addDescENToMovie(getMovieIDsByTitle("Ant-Man")[0],"Armed with a super-suit with the astonishing ability to shrink in scale but increase in strength, cat burglar Scott Lang must embrace his inner hero and help his mentor, Dr. Hank Pym, plan and pull off a heist that will save the world.");
+        addDescENToMovie(getMovieIDsByTitle("The Incredible Hulk")[0],"Bruce Banner, a scientist on the run from the U.S. Government, must find a cure for the monster he emerges whenever he loses his temper.");
+        addDescENToMovie(getMovieIDsByTitle("Iron Man")[0],"After being held captive in an Afghan cave, billionaire engineer Tony Stark creates a unique weaponized suit of armor to fight evil.");
+        addDescENToMovie(getMovieIDsByTitle("Iron Man 2")[0],"With the world now aware of his identity as Iron Man, Tony Stark must contend with both his declining health and a vengeful mad man with ties to his father's legacy.");
+        addDescENToMovie(getMovieIDsByTitle("Iron Man 3")[0],"When Tony Stark's world is torn apart by a formidable terrorist called the Mandarin, he starts an odyssey of rebuilding and retribution.");
+
+        //Genres
+        insertGenreIntoDatabase("Action");
+        insertGenreIntoDatabase("Adventure");
+        insertGenreIntoDatabase("Sci-Fi");
+        insertGenreIntoDatabase("Fantasy");
+        insertGenreIntoDatabase("Crime");
+        insertGenreIntoDatabase("Drama");
+
+        //Actors
+        insertActorIntoDatabase("Christian Bale");
+        insertActorIntoDatabase("Michael Caine");
+        insertActorIntoDatabase("Liam Neeson");
+        insertActorIntoDatabase("Katie Holmes");
+        insertActorIntoDatabase("Gary Oldman");
+        insertActorIntoDatabase("Cillian Murphy");
+        insertActorIntoDatabase("Morgan Freeman");
+        insertActorIntoDatabase("Heath Ledger");
+        insertActorIntoDatabase("Aaron Eckhart");
+        insertActorIntoDatabase("Maggie Gyllenhaal");
+        insertActorIntoDatabase("Tom Hardy");
+        insertActorIntoDatabase("Anne Hathaway");
+        insertActorIntoDatabase("Joseph Gordon-Levitt");
+        insertActorIntoDatabase("Marion Cotillard");
+        insertActorIntoDatabase("Robert Downey Jr.");
+        insertActorIntoDatabase("Jude Law");
+        insertActorIntoDatabase("Mark Strong");
+        insertActorIntoDatabase("Rachel McAdams");
+        insertActorIntoDatabase("Eddie Marsan");
+        insertActorIntoDatabase("Noomi Rapace");
+        insertActorIntoDatabase("Jared Harris");
+        insertActorIntoDatabase("Stephen Fry");
+        insertActorIntoDatabase("Chris Evans");
+        insertActorIntoDatabase("Hayley Atwell");
+        insertActorIntoDatabase("Sebastian Stan");
+        insertActorIntoDatabase("Tommy Lee Jones");
+        insertActorIntoDatabase("Hugo Weaving");
+        insertActorIntoDatabase("Dominic Cooper");
+        insertActorIntoDatabase("Richard Armitage");
+        insertActorIntoDatabase("Stanley Tucci");
+        insertActorIntoDatabase("Samuel L. Jackson");
+        insertActorIntoDatabase("Toby Jones");
+        insertActorIntoDatabase("Neal McDonough");
+        insertActorIntoDatabase("Derek Luke");
+        insertActorIntoDatabase("Kenneth Choi");
+        insertActorIntoDatabase("JJ Feild");
+        insertActorIntoDatabase("Scarlett Johansson");
+        insertActorIntoDatabase("Robert Redford");
+        insertActorIntoDatabase("Anthony Mackie");
+        insertActorIntoDatabase("Cobie Smulders");
+        insertActorIntoDatabase("Don Cheadle");
+        insertActorIntoDatabase("Jeremy Renner");
+        insertActorIntoDatabase("Chadwick Boseman");
+        insertActorIntoDatabase("Paul Bettany");
+        insertActorIntoDatabase("Elizabeth Olsen");
+        insertActorIntoDatabase("Paul Rudd");
+        insertActorIntoDatabase("Emily VanCamp");
+        insertActorIntoDatabase("Tom Holland");
+        insertActorIntoDatabase("Daniel Brühl");
+        insertActorIntoDatabase("Frank Grillo");
+        insertActorIntoDatabase("William Hurt");
+        insertActorIntoDatabase("Martin Freeman");
+        insertActorIntoDatabase("Marisa Tomei");
+        insertActorIntoDatabase("John Slattery");
+        insertActorIntoDatabase("Chris Pratt");
+        insertActorIntoDatabase("Zoe Saldana");
+        insertActorIntoDatabase("Dave Bautista");
+        insertActorIntoDatabase("Vin Diesel");
+        insertActorIntoDatabase("Bradley Cooper");
+        insertActorIntoDatabase("Lee Pace");
+        insertActorIntoDatabase("Michael Rooker");
+        insertActorIntoDatabase("Karen Gillan");
+        insertActorIntoDatabase("Benicio Del Toro");
+        insertActorIntoDatabase("John C. Reilly");
+        insertActorIntoDatabase("Pom Klementieff");
+        insertActorIntoDatabase("Kurt Russel");
+        insertActorIntoDatabase("Sylvester Stallone");
+        insertActorIntoDatabase("Benedict Cumberbatch");
+        insertActorIntoDatabase("Chiwetel Ejiofor");
+        insertActorIntoDatabase("Benedict Wong");
+        insertActorIntoDatabase("Mads Mikkelsen");
+        insertActorIntoDatabase("Tilda Swinton");
+        insertActorIntoDatabase("Mark Ruffalo");
+        insertActorIntoDatabase("Chris Hemsworth");
+        insertActorIntoDatabase("Tom Hiddleston");
+        insertActorIntoDatabase("Clark Gregg");
+        insertActorIntoDatabase("Stellan Skarsgard");
+        insertActorIntoDatabase("Gwyneth Paltrow");
+        insertActorIntoDatabase("James Spader");
+        insertActorIntoDatabase("Aaron Taylor-Johnson");
+        insertActorIntoDatabase("Natalie Portman");
+        insertActorIntoDatabase("Anthony Hopkins");
+        insertActorIntoDatabase("Kat Dennings");
+        insertActorIntoDatabase("Com Feore");
+        insertActorIntoDatabase("Idris Elba");
+        insertActorIntoDatabase("Ray Stevenson");
+        insertActorIntoDatabase("Tadanobu Asano");
+        insertActorIntoDatabase("Josh Dallas");
+        insertActorIntoDatabase("Jaimie Alexander");
+        insertActorIntoDatabase("Rene Russo");
+        insertActorIntoDatabase("Christopher Eccleston");
+        insertActorIntoDatabase("Zachary Levi");
+        insertActorIntoDatabase("Adewale Akinnuoye-Agbaje");
+        insertActorIntoDatabase("Ryan Reynolds");
+        insertActorIntoDatabase("Karan Sodi");
+        insertActorIntoDatabase("Ed Skrein");
+        insertActorIntoDatabase("Michael Benyaer");
+        insertActorIntoDatabase("Stefan Kapicic");
+        insertActorIntoDatabase("Brianna Hildebrand");
+        insertActorIntoDatabase("TJ Miller");
+        insertActorIntoDatabase("Michael Douglas");
+        insertActorIntoDatabase("Evangeline Lilly");
+        insertActorIntoDatabase("Corey Stoll");
+        insertActorIntoDatabase("Bobby Cannavale");
+        insertActorIntoDatabase("Judy Greer");
+        insertActorIntoDatabase("Abby Ryder Fortson");
+        insertActorIntoDatabase("Michael Pena");
+        insertActorIntoDatabase("John Atwell");
+        insertActorIntoDatabase("Terrence Howard");
+        insertActorIntoDatabase("Jeff Bridges");
+        insertActorIntoDatabase("Leslie Bibb");
+        insertActorIntoDatabase("Shaun Toub");
+        insertActorIntoDatabase("Faran Tahir");
+        insertActorIntoDatabase("Jon Favreau");
+        insertActorIntoDatabase("Sam Rockwell");
+        insertActorIntoDatabase("Mickey Rourke");
+        insertActorIntoDatabase("Garry Shandling");
+        insertActorIntoDatabase("Kate Mara");
+        insertActorIntoDatabase("Guy Pearce");
+        insertActorIntoDatabase("Rebecca Hall");
+        insertActorIntoDatabase("Ben Kingsley");
+        insertActorIntoDatabase("James Badge Dale");
+        insertActorIntoDatabase("Stephanie Szostak");
+
+        //Movie Directors
+        insertDirectorIntoDatabase("Cristopher Nolan");
+        insertDirectorIntoDatabase("Guy Ritchie");
+        insertDirectorIntoDatabase("Joe Johnston");
+        insertDirectorIntoDatabase("Anthony Russo");
+        insertDirectorIntoDatabase("Joe Russo");
+        insertDirectorIntoDatabase("James Gunn");
+        insertDirectorIntoDatabase("Scott Derrickson");
+        insertDirectorIntoDatabase("Joss Whedon");
+        insertDirectorIntoDatabase("Kenneth Branagh");
+        insertDirectorIntoDatabase("Alan Taylor");
+        insertDirectorIntoDatabase("Tim Miller");
+        insertDirectorIntoDatabase("Peyton Reed");
+        insertDirectorIntoDatabase("Louis Leterrier");
+        insertDirectorIntoDatabase("Jon Favreau");
+        insertDirectorIntoDatabase("Shane Black");
+
+        //Movie Actors
+        addActorsToMovie(getMovieIDsByTitle("Batman Begins")[0],getActorIDs(new String[]{"Christian Bale", "Michael Caine", "Liam Neeson", "Katie Holmes", "Gary Oldman", "Cillian Murphy", "Morgan Freeman"}));
+        addActorsToMovie(getMovieIDsByTitle("Batman - The Dark Knight")[0],getActorIDs(new String[]{"Christian Bale","Michael Caine","Heath Ledger","Aaron Eckhart","Gary Oldman","Maggie Gyllenhaal","Morgan Freeman"}));
+        addActorsToMovie(getMovieIDsByTitle("Batman - The Dark Knight Rises")[0],getActorIDs(new String[]{"Christian Bale","Michael Caine","Tom Hardy","Anne Hathaway","Gary Oldman","Joseph Gordon-Levitt","Morgan Freeman","Marion Cotillard"}));
+        addActorsToMovie(getMovieIDsByTitle("Sherlock Holmes")[0],getActorIDs(new String[]{"Robert Downey Jr.","Jude Law","Mark Strong","Rachel McAdams","Eddie Marsan"}));
+        addActorsToMovie(getMovieIDsByTitle("Sherlock Holmes: A Game of Shadows")[0],getActorIDs(new String[]{"Robert Downey Jr.","Jude Law","Noomi Rapace","Rachel McAdams","Jared Harris","Stephen Fry","Eddie Marsan"}));
+        addActorsToMovie(getMovieIDsByTitle("Captain America: The First Avenger")[0],getActorIDs(new String[]{"Chris Evans","Hayley Atwell","Sebastian Stan","Tommy Lee Jones","Hugo Weaving","Dominic Cooper","Richard Armitage","Stanley Tucci","Samuel L. Jackson","Toby Jones","Neal McDonough","Derek Luke","Kenneth Choi","JJ Feild"}));
+        addActorsToMovie(getMovieIDsByTitle("Captain America: The Winter Soldier")[0],getActorIDs(new String[]{"Chris Evans","Samuel L. Jackson","Scarlett Johansson","Robert Redford","Sebastian Stan","Anthony Mackie","Cobie Smulders"}));
+        addActorsToMovie(getMovieIDsByTitle("Captain America: Civil War")[0],getActorIDs(new String[]{"Chris Evans","Robert Downey Jr.","Scarlett Johansson","Sebastian Stan","Anthony Mackie","Don Cheadle","Jeremy Renner","Chadwick Boseman","Paul Bettany","Elizabeth Olsen","Paul Rudd","Emily VanCamp","Tom Holland","Daniel Brühl","Frank Grillo","William Hurt","Martin Freeman","Marisa Tomei","John Slattery"}));
+        addActorsToMovie(getMovieIDsByTitle("Guardians of the Galaxy")[0],getActorIDs(new String[]{"Chris Pratt","Zoe Saldana","Dave Bautista","Vin Diesel","Bradley Cooper","Lee Pace","Michael Rooker","Karen Gillan","Benicio Del Toro","John C. Reilly"}));
+        addActorsToMovie(getMovieIDsByTitle("Guardians of the Galaxy Vol. 2")[0],getActorIDs(new String[]{"Chris Pratt","Zoe Saldana","Dave Bautista","Vin Diesel","Bradley Cooper","Pom Klementieff","Michael Rooker","Karen Gillan","Kurt Russel","Sylvester Stallone"}));
+        addActorsToMovie(getMovieIDsByTitle("Doctor Strange")[0],getActorIDs(new String[]{"Benedict Cumberbatch","Chiwetel Ejiofor","Rachel McAdams","Benedict Wong","Mads Mikkelsen","Tilda Swinton"}));
+        addActorsToMovie(getMovieIDsByTitle("The Avengers")[0],getActorIDs(new String[]{"Robert Downey Jr.","Chris Evans","Mark Ruffalo","Chris Hemsworth","Scarlett Johansson","Jeremy Renner","Tom Hiddleston","Clark Gregg","Cobie Smulders","Stellan Skarsgard","Samuel L. Jackson","Gwyneth Paltrow","Paul Bettany","Hayley Atwell"}));
+        addActorsToMovie(getMovieIDsByTitle("Avengers: Age of Ultron")[0],getActorIDs(new String[]{"Robert Downey Jr.","Chris Evans","Mark Ruffalo","Chris Hemsworth","Scarlett Johansson","Jeremy Renner","James Spader","Don Cheadle","Aaron Taylor-Johnson","Elizabeth Olsen","Samuel L. Jackson","Gwyneth Paltrow","Paul Bettany","Anthony Mackie","Cobie Smulders","Hayley Atwell"}));
+        addActorsToMovie(getMovieIDsByTitle("Thor")[0],getActorIDs(new String[]{"Chris Hemsworth","Natalie Portman","Tom Hiddleston","Anthony Hopkins","Stellan Skarsgard","Kat Dennings","Clark Gregg","Com Feore","Idris Elba","Ray Stevenson","Tadanobu Asano","Josh Dallas","Jaimie Alexander","Rene Russo"}));
+        addActorsToMovie(getMovieIDsByTitle("Thor: The Dark World")[0],getActorIDs(new String[]{"Chris Hemsworth","Natalie Portman","Tom Hiddleston","Anthony Hopkins","Christopher Eccleston","Jaimie Alexander","Zachary Levi","Ray Stevenson","Tadanobu Asano","Idris Elba","Rene Russo","Adewale Akinnuoye-Agbaje","Kat Dennings","Stellan Skarsgard"}));
+        addActorsToMovie(getMovieIDsByTitle("Deadpool")[0],getActorIDs(new String[]{"Ryan Reynolds","Karan Sodi","Ed Skrein","Michael Benyaer","Stefan Kapicic","Brianna Hildebrand","TJ Miller"}));
+        addActorsToMovie(getMovieIDsByTitle("Ant-Man")[0],getActorIDs(new String[]{"Paul Rudd","Michael Douglas","Evangeline Lilly","Corey Stoll","Bobby Cannavale","Anthony Mackie","Judy Greer","Abby Ryder Fortson","Michael Pena","Hayley Atwell","John Atwell"}));
+        addActorsToMovie(getMovieIDsByTitle("The Incredible Hulk")[0],getActorIDs(new String[]{"Edward Norton","Liv Tyler","Tim Roth","William Hurt","Tim Blak","Tim Blake Nelson","Ty Burrell"}));
+        addActorsToMovie(getMovieIDsByTitle("Iron Man")[0],getActorIDs(new String[]{"Robert Downey Jr.","Terrence Howard","Jeff Bridges","Gwyneth Paltrow","Leslie Bibb","Shaun Toub","Faran Tahir","Clark Gregg","Paul Bettany","Jon Favreau"}));
+        addActorsToMovie(getMovieIDsByTitle("Iron Man 2")[0],getActorIDs(new String[]{"Robert Downey Jr.","Gwyneth Paltrow","Don Cheadle","Scarlett Johansson","Sam Rockwell","Mickey Rourke","Samuel L. Jackson","Clark Gregg","John Slattery","Garry Shandling","Paul Bettany","Kate Mara","Leslie Bibb","Jon Favreau"}));
+        addActorsToMovie(getMovieIDsByTitle("Iron Man 3")[0],getActorIDs(new String[]{"Robert Downey Jr.","Gwyneth Paltrow","Don Cheadle","Guy Pearce","Rebecca Hall","Jon Favreau","Ben Kingsley","James Badge Dale","Stephanie Szostak","Paul Bettany"}));
+
+        //addDirectorToMovie(String[])
+        addDirectorsToMovie(getMovieIDsByTitle("Batman Begins")[0],getDirectorIDs(new String[]{"Cristopher Nolan"}));
+        addDirectorsToMovie(getMovieIDsByTitle("Batman - The Dark Knight")[0],getDirectorIDs(new String[]{"Cristopher Nolan"}));
+        addDirectorsToMovie(getMovieIDsByTitle("Batman - The Dark Knight Rises")[0],getDirectorIDs(new String[]{"Cristopher Nolan"}));
+        addDirectorsToMovie(getMovieIDsByTitle("Sherlock Holmes")[0],getDirectorIDs(new String[]{"Guy Ritchie"}));
+        addDirectorsToMovie(getMovieIDsByTitle("Sherlock Holmes: A Game of Shadows")[0],getDirectorIDs(new String[]{"Guy Ritchie"}));
+        addDirectorsToMovie(getMovieIDsByTitle("Captain America: The First Avenger")[0],getDirectorIDs(new String[]{"Joe Johnston"}));
+        addDirectorsToMovie(getMovieIDsByTitle("Captain America: The Winter Soldier")[0],getDirectorIDs(new String[]{"Anthony Russo","Joe Russo"}));
+        addDirectorsToMovie(getMovieIDsByTitle("Captain America: Civil War")[0],getDirectorIDs(new String[]{"Anthony Russo","Joe Russo"}));
+        addDirectorsToMovie(getMovieIDsByTitle("Guardians of the Galaxy")[0],getDirectorIDs(new String[]{"James Gunn"}));
+        addDirectorsToMovie(getMovieIDsByTitle("Guardians of the Galaxy Vol. 2")[0],getDirectorIDs(new String[]{"James Gunn"}));
+        addDirectorsToMovie(getMovieIDsByTitle("Doctor Strange")[0],getDirectorIDs(new String[]{"Scott Derrickson"}));
+        addDirectorsToMovie(getMovieIDsByTitle("The Avengers")[0],getDirectorIDs(new String[]{"Joss Whedon"}));
+        addDirectorsToMovie(getMovieIDsByTitle("Avengers: Age of Ultron")[0],getDirectorIDs(new String[]{"Joss Whedon"}));
+        addDirectorsToMovie(getMovieIDsByTitle("Thor")[0],getDirectorIDs(new String[]{"Kenneth Branagh"}));
+        addDirectorsToMovie(getMovieIDsByTitle("Thor: The Dark World")[0],getDirectorIDs(new String[]{"Alan Taylor"}));
+        addDirectorsToMovie(getMovieIDsByTitle("Deadpool")[0],getDirectorIDs(new String[]{"Tim Miller"}));
+        addDirectorsToMovie(getMovieIDsByTitle("Ant-Man")[0],getDirectorIDs(new String[]{"Peyton Reed"}));
+        addDirectorsToMovie(getMovieIDsByTitle("The Incredible Hulk")[0],getDirectorIDs(new String[]{"Louis Leterrier"}));
+        addDirectorsToMovie(getMovieIDsByTitle("Iron Man")[0],getDirectorIDs(new String[]{"Jon Favreau"}));
+        addDirectorsToMovie(getMovieIDsByTitle("Iron Man 2")[0],getDirectorIDs(new String[]{"Jon Favreau"}));
+        addDirectorsToMovie(getMovieIDsByTitle("Iron Man 3")[0],getDirectorIDs(new String[]{"Shane Black"}));
+
+        //addGenreToMovie(String[])
+        addGenreToMovie(getMovieIDsByTitle("Batman Begins")[0],getGenreIDs(new String[]{"Drama","Action","Crime"}));
+        addGenreToMovie(getMovieIDsByTitle("Batman - The Dark Knight")[0],getGenreIDs(new String[]{"Drama","Action","Crime"}));
+        addGenreToMovie(getMovieIDsByTitle("Batman - The Dark Knight Rises")[0],getGenreIDs(new String[]{"Drama","Action","Crime"}));
+        addGenreToMovie(getMovieIDsByTitle("Sherlock Holmes")[0],getGenreIDs(new String[]{"Action","Adventure","Crime"}));
+        addGenreToMovie(getMovieIDsByTitle("Sherlock Holmes: A Game of Shadows")[0],getGenreIDs(new String[]{"Action","Adventure","Crime"}));
+        addGenreToMovie(getMovieIDsByTitle("Captain America: The First Avenger")[0],getGenreIDs(new String[]{"Action","Adventure","Sci-Fi"}));
+        addGenreToMovie(getMovieIDsByTitle("Captain America: The Winter Soldier")[0],getGenreIDs(new String[]{"Action","Adventure","Sci-Fi"}));
+        addGenreToMovie(getMovieIDsByTitle("Captain America: Civil War")[0],getGenreIDs(new String[]{"Action","Adventure","Sci-Fi"}));
+        addGenreToMovie(getMovieIDsByTitle("Guardians of the Galaxy")[0],getGenreIDs(new String[]{"Action","Adventure","Sci-Fi"}));
+        addGenreToMovie(getMovieIDsByTitle("Guardians of the Galaxy Vol. 2")[0],getGenreIDs(new String[]{"Action","Adventure","Sci-Fi"}));
+        addGenreToMovie(getMovieIDsByTitle("Doctor Strange")[0],getGenreIDs(new String[]{"Action","Adventure","Fantasy"}));
+        addGenreToMovie(getMovieIDsByTitle("The Avengers")[0],getGenreIDs(new String[]{"Action","Sci-Fi"}));
+        addGenreToMovie(getMovieIDsByTitle("Avengers: Age of Ultron")[0],getGenreIDs(new String[]{"Action","Adventure","Sci-Fi"}));
+        addGenreToMovie(getMovieIDsByTitle("Thor")[0],getGenreIDs(new String[]{"Action","Adventure","Fantasy"}));
+        addGenreToMovie(getMovieIDsByTitle("Thor: The Dark World")[0],getGenreIDs(new String[]{"Action","Adventure","Fantasy"}));
+        addGenreToMovie(getMovieIDsByTitle("Deadpool")[0],getGenreIDs(new String[]{"Action","Adventure","Comedy"}));
+        addGenreToMovie(getMovieIDsByTitle("Ant-Man")[0],getGenreIDs(new String[]{"Action","Adventure","Comedy"}));
+        addGenreToMovie(getMovieIDsByTitle("The Incredible Hulk")[0],getGenreIDs(new String[]{"Action","Adventure","Sci-Fi"}));
+        addGenreToMovie(getMovieIDsByTitle("Iron Man")[0],getGenreIDs(new String[]{"Action","Adventure","Sci-Fi"}));
+        addGenreToMovie(getMovieIDsByTitle("Iron Man 2")[0],getGenreIDs(new String[]{"Action","Adventure","Sci-Fi"}));
+        addGenreToMovie(getMovieIDsByTitle("Iron Man 3")[0],getGenreIDs(new String[]{"Action","Adventure","Sci-Fi"}));
+
+
+        insertSeriesIntoDatabase("The Big Bang Theory", 4.3, 8, "2007");
+        insertSeriesIntoDatabase("Breaking Bad", 4.9, 8, "2008");
+
+        addMovieList("Watch List");
+        addMovieToList("Watch List", "Guardians of the Galaxy");
+        addMovieToList("Watch List", "Guardians of the Galaxy Vol. 2");
+        addEpisodesToSeason("The Big Bang Theory",1,21);
+        addEpisodesToSeason("The Big Bang Theory",2,20);
+        addEpisodesToSeason("The Big Bang Theory",3,19);
+        addEpisodesToSeason("The Big Bang Theory",4,18);
+    }
 }
