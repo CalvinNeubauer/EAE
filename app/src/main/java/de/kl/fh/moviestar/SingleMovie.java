@@ -49,6 +49,8 @@ public class SingleMovie extends AppCompatActivity implements View.OnClickListen
         TextView release = (TextView) this.findViewById(R.id.Release);
         release.setText(day+"."+month+"."+year);
 
+        //String director = cursor.getString(cursor.getColumnIndex(DatabaseManager.COLUMN))
+
         int duration = cursor.getInt(cursor.getColumnIndex(DatabaseManager.COLUMN_DURATION));
         TextView textViewRuntime = (TextView) this.findViewById(R.id.Runtime);
         int minutes = duration % 60;
