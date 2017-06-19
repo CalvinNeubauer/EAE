@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:tools="http://schemas.android.com/tools"
+      xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <item
+        android:id="@+id/bread_home"
+        android:checkable="true"
+        android:enabled="false"
+        android:icon="@drawable/ic_home_black_24dp"
+        android:title="Home"/>
+    <item
+        android:id="@+id/bread_myLists"
+        android:checkable="true"
+        android:icon="@drawable/plus_button"
+        android:title="My Lists"/>
+    <item
+        android:id="@+id/bread_movies"
+        android:checkable="true"
+        android:icon="@drawable/plus_button"
+        android:title="Movies"/>
+    <item
+        android:id="@+id/bread_series"
+        android:checkable="true"
+        android:icon="@drawable/plus_button"
+        android:title="Series"/>
+
+    <item android:title="@string/section_settings">
+        <menu>
+            <item
+                android:id="@+id/nav_help"
+                android:icon="@drawable/ic_help_black_24dp"
+                android:title="@string/action_help"/>
+        </menu>
+    </item>
+
+</menu>

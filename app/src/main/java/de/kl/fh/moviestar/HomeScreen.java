@@ -2,22 +2,25 @@ package de.kl.fh.moviestar;
 
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
-
-
-public class HomeScreen extends AppCompatActivity implements View.OnClickListener{
-
+public class HomeScreen extends AppCompatActivity implements View.OnClickListener
+{
     private Button movies,series;
     private DatabaseManager dbManager;
     private SQLiteDatabase database;
+    private DrawerLayout mDrawerLayout;
+
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         dbManager = DatabaseManager.getInstance(this);
         setContentView(R.layout.activity_home_screen);
@@ -30,19 +33,23 @@ public class HomeScreen extends AppCompatActivity implements View.OnClickListene
         movies.setOnClickListener(this);
         series.setOnClickListener(this);
         dbManager.getAllMovies();
+
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
     }
 
     // git Test
-    public void onClick(View v){
-
+    public void onClick(View v)
+    {
         //View movies
-        if(v == movies){
+        if(v == movies)
+        {
             Intent collIntent = new Intent(this, Movies.class);
             startActivity(collIntent);
         }
 
         //start series
-        if(v == series){
+        if(v == series)
+        {
             Intent searchIntent = new Intent(this, Series.class);
             startActivity(searchIntent);
         }

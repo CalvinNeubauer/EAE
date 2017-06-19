@@ -2,10 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/CouchPotato.iml" filepath="$PROJECT_DIR$/CouchPotato.iml" />
       <module fileurl="file://$PROJECT_DIR$/EAE.iml" filepath="$PROJECT_DIR$/EAE.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/moviestar.iml" filepath="$PROJECT_DIR$/moviestar.iml" />
     </modules>
   </component>
 </project>
