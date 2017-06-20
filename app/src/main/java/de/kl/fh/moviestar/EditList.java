@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Collection;
+import java.util.StringTokenizer;
 import java.util.Vector;
 
 /**
@@ -72,10 +73,25 @@ public class EditList extends AppCompatActivity implements View.OnClickListener 
         adapter = new EditListAdapter(ctx, ItemLayout, cursor, from, to, type, 0);
         listView.setAdapter(adapter);
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                TextView datIDView = (TextView) view.findViewById(R.id.title_id);
+                int datId = Integer.parseInt((String)datIDView.getText());
+                if(titleIDs.contains(datId)){
+                    titleIDs.remove((Integer)datId);
+                }
+                else {
+                    titleIDs.add(datId);
+                }
 
+                //test
+                Context context = getApplicationContext();
+                CharSequence text = "Hello toast!";
+                int duration = Toast.LENGTH_SHORT;
+
+                Toast toast = Toast.makeText(context, text, duration);
+                toast.show();
             }
         });
     }
@@ -100,6 +116,7 @@ public class EditList extends AppCompatActivity implements View.OnClickListener 
                     db.deleteSeriesFromList(listID,i);
             }
         }
+
         finish();
     }
 
