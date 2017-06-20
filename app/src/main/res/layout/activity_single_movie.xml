@@ -117,4 +117,67 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="50dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Director:"
+        android:textColor="@color/letter"
+        android:id="@+id/director_label"
+        android:layout_below="@+id/Description"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="79dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="director name"
+        android:textColor="@color/letter"
+        android:id="@+id/director"
+        android:layout_below="@+id/director_label"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Actors:"
+        android:textColor="@color/letter"
+        android:id="@+id/Actors_label"
+        android:layout_marginBottom="32dp"
+        android:layout_above="@+id/addToListButton"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Actors names"
+        android:textColor="@color/letter"
+        android:id="@+id/Actors"
+        android:layout_above="@+id/addToListButton"
+        android:layout_marginBottom="10dp"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Genre:"
+        android:textColor="@color/letter"
+        android:id="@+id/Genre_label"
+        android:layout_above="@+id/director"
+        android:layout_toEndOf="@+id/LabelRelease" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Example Genre"
+        android:textColor="@color/letter"
+        android:id="@+id/Genre"
+        android:layout_below="@+id/Genre_label"
+        android:layout_toEndOf="@+id/LabelRelease" />
 </RelativeLayout>

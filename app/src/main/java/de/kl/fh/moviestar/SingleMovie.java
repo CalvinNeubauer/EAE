@@ -2,6 +2,7 @@ package de.kl.fh.moviestar;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -49,6 +50,8 @@ public class SingleMovie extends AppCompatActivity implements View.OnClickListen
         TextView release = (TextView) this.findViewById(R.id.Release);
         release.setText(day+"."+month+"."+year);
 
+        //String director = cursor.getString(cursor.getColumnIndex(DatabaseManager.COLUMN))
+
         int duration = cursor.getInt(cursor.getColumnIndex(DatabaseManager.COLUMN_DURATION));
         TextView textViewRuntime = (TextView) this.findViewById(R.id.Runtime);
         int minutes = duration % 60;
@@ -69,6 +72,60 @@ public class SingleMovie extends AppCompatActivity implements View.OnClickListen
         float rating = cursor.getFloat(cursor.getColumnIndex(DatabaseManager.COLUMN_RATING));
         RatingBar titleRating = (RatingBar) this.findViewById(R.id.ratingBar);
         titleRating.setRating(rating);
+
+
+        TextView textViewDirectorLabel = (TextView) this.findViewById(R.id.director_label);
+        TextView textViewActorsLabel = (TextView) this.findViewById(R.id.Actors_label);
+        textViewActorsLabel.setText("Cast");
+        TextView textViewGenre = (TextView) this.findViewById(R.id.Genre);
+        TextView textViewCast = (TextView) this.findViewById(R.id.Actors);
+        TextView textViewDirector = (TextView) this.findViewById(R.id.director);
+        String director = "";
+        String cast = "";
+        String genre = "";
+
+        if(true){
+
+            textViewDirectorLabel.setText("Director:");
+            cursor = db.getDirectorOfMovie(title);
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()){
+                director += ", "+ cursor.getString(cursor.getColumnIndex(DatabaseManager.COLUMN_NAME));
+                cursor.moveToNext();
+            }
+
+
+            cursor = db.getCastFromMovie(title);
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()){
+                cast += ", "+ cursor.getString(cursor.getColumnIndex(DatabaseManager.COLUMN_NAME));
+                cursor.moveToFirst();
+            }
+
+
+            cursor = db.getGenreOfMovie(title);
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()){
+                genre += ", "+ cursor.getString(cursor.getColumnIndex(DatabaseManager.COLUMN_NAME));
+            }
+            textViewCast.setText(genre);
+
+        }
+        if (type.equals("serie")){
+            textViewDirectorLabel.setText("Creator:");
+
+            cursor = db.getCreatorOfSeries(title);
+            director = cursor.getString(cursor.getColumnIndex(DatabaseManager.COLUMN_NAME));
+
+            cursor = db.getCastFromMovie(title);
+            cast = cursor.getString(cursor.getColumnIndex(DatabaseManager.COLUMN_NAME));
+
+            //cursor = db.getGe
+
+
+        }
+        textViewDirector.setText(director);
+        textViewCast.setText(cast);
     }
 
     @Override
