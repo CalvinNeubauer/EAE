@@ -84,7 +84,7 @@ public class SingleMovie extends AppCompatActivity implements View.OnClickListen
         String cast = "";
         String genre = "";
 
-        if(true){
+        if(type.equals("Movies")){
 
             textViewDirectorLabel.setText("Director:");
             cursor = db.getDirectorOfMovie(title);
@@ -93,25 +93,26 @@ public class SingleMovie extends AppCompatActivity implements View.OnClickListen
                 director += ", "+ cursor.getString(cursor.getColumnIndex(DatabaseManager.COLUMN_NAME));
                 cursor.moveToNext();
             }
-
+            cursor.close();
 
             cursor = db.getCastFromMovie(title);
             cursor.moveToFirst();
             while (!cursor.isAfterLast()){
                 cast += ", "+ cursor.getString(cursor.getColumnIndex(DatabaseManager.COLUMN_NAME));
-                cursor.moveToFirst();
+                cursor.moveToNext();
             }
-
+            cursor.close();
 
             cursor = db.getGenreOfMovie(title);
             cursor.moveToFirst();
             while (!cursor.isAfterLast()){
                 genre += ", "+ cursor.getString(cursor.getColumnIndex(DatabaseManager.COLUMN_NAME));
+                cursor.moveToNext();
             }
+            cursor.close();
             textViewCast.setText(genre);
 
-        }
-        if (type.equals("serie")){
+        } else if (type.equals("Series")){
             textViewDirectorLabel.setText("Creator:");
 
             cursor = db.getCreatorOfSeries(title);
