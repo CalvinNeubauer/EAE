@@ -28,6 +28,7 @@
         <activity android:name=".login" />
         <activity android:name=".SingleMovie"></activity>
         <activity android:name=".NewList"></activity>
+        <activity android:name=".EditList"></activity>
     </application>
 
 </manifest>

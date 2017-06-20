@@ -76,6 +76,7 @@ public class SingleMovie extends AppCompatActivity implements View.OnClickListen
         Intent listIntent = new Intent(this,UserList.class);
         listIntent.putExtra("ID",ID);
         listIntent.putExtra("type",type);
+        listIntent.putExtra("action","add");
         startActivity(listIntent);
     }
 }

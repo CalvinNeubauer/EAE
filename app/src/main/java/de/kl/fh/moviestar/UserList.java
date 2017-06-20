@@ -20,10 +20,11 @@ import static android.R.attr.data;
 public class UserList extends AppCompatActivity implements View.OnClickListener {
     private DatabaseManager db;
     private ListView listView;
-    private String type;
+    private String type,action;
     private String[] from;
     private int[] to;
     private Button addListButton;
+    private int ID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +37,8 @@ public class UserList extends AppCompatActivity implements View.OnClickListener 
         //Get intent extra
         Intent myIntent = getIntent();
         type = myIntent.getStringExtra("type");
+        ID = myIntent.getIntExtra("ID",-1);
+        action = myIntent.getStringExtra("action");
 
         db = DatabaseManager.getInstance(this);
         listView = (ListView) findViewById(R.id.user_list_view);
@@ -60,16 +63,32 @@ public class UserList extends AppCompatActivity implements View.OnClickListener 
         listView.setAdapter(adapter);
 
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                TextView listName = (TextView) view.findViewById(R.id.list_name);
-                Intent shortList = new Intent(ctx, ShortList.class);
-                shortList.putExtra("listName", listName.getText());
-                shortList.putExtra("type", type);
-                startActivity(shortList);
-            }
-        });
+        if(ID>-1 && action.equals("add"))
+        {
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    TextView listName = (TextView) view.findViewById(R.id.list_name);
+                    if(type.equals("Movies"))
+                        db.addMovieToList(listName.getText().toString(),ID);
+                    else
+                        db.addSeriesToList(listName.getText().toString(),ID);
+                    finish();
+                }
+            });
+        }
+        else {
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    TextView listName = (TextView) view.findViewById(R.id.list_name);
+                    Intent shortList = new Intent(ctx, ShortList.class);
+                    shortList.putExtra("listName", listName.getText());
+                    shortList.putExtra("type", type);
+                    startActivityForResult(shortList, 0);
+                }
+            });
+        }
     }
 
     public void onClick(View v) {

@@ -405,7 +405,7 @@ public class DatabaseManager extends SQLiteOpenHelper{
         );
     }
 
-    private void addMovieToList(String listName, String movieName)
+    public void addMovieToList(String listName, String movieName)
     {
         database.execSQL(
                 "INSERT INTO " + TABLE_MOVIE_LISTS_ELEMENTS + " (MOVIE_LIST_ID,MOVIE_ID) VALUES ("+
@@ -415,12 +415,34 @@ public class DatabaseManager extends SQLiteOpenHelper{
         );
     }
 
-    private void addSeriesToList(String listName, String seriesName)
+    public void addSeriesToList(String listName, String seriesName)
     {
         database.execSQL(
                 "INSERT INTO " + TABLE_SERIES_LISTS_ELEMENTS + " (SERIES_LIST_ID,SERIES_ID) VALUES ("+
                         "(SELECT ID FROM "+TABLE_SERIES_LISTS+" WHERE NAME LIKE '"+listName+"')" + "," +
                         "(SELECT ID FROM "+TABLE_SERIES+" WHERE TITLE LIKE '"+seriesName+"')"
+                        + ")"
+        );
+    }
+
+
+
+    public void addMovieToList(String listName, int movieID)
+    {
+        database.execSQL(
+                "INSERT INTO " + TABLE_MOVIE_LISTS_ELEMENTS + " (MOVIE_LIST_ID,MOVIE_ID) VALUES ("+
+                        "(SELECT ID FROM "+TABLE_MOVIE_LISTS+" WHERE NAME LIKE '"+listName+"')" + "," +
+                        movieID
+                        + ")"
+        );
+    }
+
+    public void addSeriesToList(String listName, int seriesID)
+    {
+        database.execSQL(
+                "INSERT INTO " + TABLE_SERIES_LISTS_ELEMENTS + " (SERIES_LIST_ID,SERIES_ID) VALUES ("+
+                        "(SELECT ID FROM "+TABLE_SERIES_LISTS+" WHERE NAME LIKE '"+listName+"')" + "," +
+                        seriesID
                         + ")"
         );
     }
@@ -500,6 +522,53 @@ public class DatabaseManager extends SQLiteOpenHelper{
         database.execSQL(sql);
     }
 
+    //------DELETE DATA---------------------------------------------------------------------------------------------------------
+    public void deleteMovieFromList(int listID, int movieID)
+    {
+        database.execSQL("DELETE FROM "+TABLE_MOVIE_LISTS_ELEMENTS+" WHERE "+COLUMN_MOVIE_LIST_ID+"="+listID+" AND "+COLUMN_MOVIE_ID+"="+movieID);
+    }
+
+    public void deleteMovieList(int listID)
+    {
+        Cursor c = getData("SELECT ID AS _id, "+COLUMN_MOVIE_ID+" FROM "+TABLE_MOVIE_LISTS_ELEMENTS + " WHERE "+COLUMN_MOVIE_LIST_ID+"="+listID);
+        Integer[] IDs = new Integer[c.getCount()];
+        int i = 0;
+        while (!c.isAfterLast())
+        {
+            IDs[i] = c.getInt(1);
+            i++;
+            c.moveToNext();
+        }
+        c.close();
+        for(int j: IDs) {
+            deleteMovieFromList(listID, j);
+        }
+        database.execSQL("DELETE FROM "+TABLE_MOVIE_LISTS+" WHERE "+COLUMN_ID+"="+listID);
+    }
+
+    public void deleteSeriesFromList(int listID, int seriesID)
+    {
+        database.execSQL("DELETE FROM "+TABLE_SERIES_LISTS_ELEMENTS+" WHERE "+COLUMN_SERIES_LIST_ID+"="+listID+" AND "+COLUMN_SERIES_ID+"="+seriesID);
+    }
+
+    public void deleteSeriesList(int listID)
+    {
+        Cursor c = getData("SELECT ID AS _id, "+COLUMN_SERIES_ID+" FROM "+TABLE_SERIES_LISTS_ELEMENTS + " WHERE "+COLUMN_SERIES_LIST_ID+"="+listID);
+        Integer[] IDs = new Integer[c.getCount()];
+        int i = 0;
+        while (!c.isAfterLast())
+        {
+            IDs[i] = c.getInt(1);
+            i++;
+            c.moveToNext();
+        }
+        c.close();
+        for(int j: IDs) {
+            deleteSeriesFromList(listID, j);
+        }
+        database.execSQL("DELETE FROM "+TABLE_SERIES_LISTS+" WHERE "+COLUMN_ID+"="+listID);
+    }
+
     //------GET DATA------------------------------------------------------------------------------------------------------------
     public Cursor getData(String sql)
     {
@@ -549,6 +618,18 @@ public class DatabaseManager extends SQLiteOpenHelper{
     {
         String sql = "SELECT SERIES_ID AS _id, a.TITLE AS "+COLUMN_TITLE+", a.RATING AS "+COLUMN_RATING+", a.SEASONS AS "+COLUMN_SEASONS+", a.RELEASE AS "+COLUMN_RELEASE+", a.DESCRIPTION_EN AS "+COLUMN_DESC_EN+", a.DESCRIPTION_DE AS "+COLUMN_DESC_DE+" FROM "+TABLE_SERIES+" a JOIN (SELECT SERIES_ID FROM "+TABLE_SERIES_LISTS_ELEMENTS+" a JOIN "+TABLE_SERIES_LISTS+" b ON a.SERIES_LIST_ID=b.ID WHERE UPPER(b.NAME) LIKE ?) b ON a.ID=b.SERIES_ID";
         return getData(sql,new String[]{listName});
+    }
+
+    public Cursor getMoviesFromList(int listID)
+    {
+        String sql = "SELECT MOVIE_ID AS _id, a.TITLE AS "+COLUMN_TITLE+", a.RATING AS "+COLUMN_RATING+", a.DURATION AS "+COLUMN_DURATION+", a.RELEASE AS "+COLUMN_RELEASE+", a.DESCRIPTION_EN AS "+COLUMN_DESC_EN+", a.DESCRIPTION_DE AS "+COLUMN_DESC_DE+", a.SEQUEL_OF AS "+COLUMN_SEQUEL_OF+", a.WATCHED AS "+COLUMN_WATCHED+" FROM "+TABLE_MOVIES+" a JOIN (SELECT MOVIE_ID FROM "+TABLE_MOVIE_LISTS_ELEMENTS+" a JOIN "+TABLE_MOVIE_LISTS+" b ON a.MOVIE_LIST_ID=b.ID WHERE b.ID = "+listID+") b ON a.ID=b.MOVIE_ID";
+        return getData(sql);
+    }
+
+    public Cursor getSeriesFromList(int listID)
+    {
+        String sql = "SELECT SERIES_ID AS _id, a.TITLE AS "+COLUMN_TITLE+", a.RATING AS "+COLUMN_RATING+", a.SEASONS AS "+COLUMN_SEASONS+", a.RELEASE AS "+COLUMN_RELEASE+", a.DESCRIPTION_EN AS "+COLUMN_DESC_EN+", a.DESCRIPTION_DE AS "+COLUMN_DESC_DE+" FROM "+TABLE_SERIES+" a JOIN (SELECT SERIES_ID FROM "+TABLE_SERIES_LISTS_ELEMENTS+" a JOIN "+TABLE_SERIES_LISTS+" b ON a.SERIES_LIST_ID=b.ID WHERE b.ID = "+listID+") b ON a.ID=b.SERIES_ID";
+        return getData(sql);
     }
 
     public Cursor getSeasonsFromSeries(int series_id)
@@ -717,6 +798,18 @@ public class DatabaseManager extends SQLiteOpenHelper{
         String sql = "SELECT "+COLUMN_ID+" AS _id, "+COLUMN_TITLE+", "+COLUMN_DURATION+", "+COLUMN_DESC_EN+", "+COLUMN_DESC_DE+", "+COLUMN_SEQUEL_OF+" FROM "+TABLE_EPISODES+" WHERE "+COLUMN_ID+"=?";
         Cursor c = getData(sql,new String[]{String.valueOf(id)});
         return c;
+    }
+
+    public Cursor getMovieListID(String name)
+    {
+        String sql = "SELECT ID as _id FROM "+TABLE_MOVIE_LISTS+" WHERE NAME LIKE ?";
+        return getData(sql, new String[]{name});
+    }
+
+    public Cursor getSeriesListID(String name)
+    {
+        String sql = "SELECT ID as _id FROM "+TABLE_SERIES_LISTS+" WHERE NAME LIKE ?";
+        return getData(sql, new String[]{name});
     }
 
     public Integer[] getSeriesIDsByFilter(String title, String creator, String actor)     //Search Terms: Actors,Creators,Title

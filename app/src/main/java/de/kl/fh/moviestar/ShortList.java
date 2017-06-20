@@ -12,7 +12,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class ShortList extends AppCompatActivity {
+public class ShortList extends AppCompatActivity implements View.OnClickListener{
     private DatabaseManager db;
     private ListView listView;
     private String type, listName;
@@ -32,11 +32,10 @@ public class ShortList extends AppCompatActivity {
 
 
         Button editButton = (Button) findViewById(R.id.edit_button);
-        if(listName==null || listName.isEmpty())
-        {
+        editButton.setOnClickListener(this);
+        if (listName == null || listName.isEmpty()) {
             editButton.setVisibility(View.GONE);
-        }
-        else {
+        } else {
             editButton.setVisibility(View.VISIBLE);
         }
 
@@ -72,11 +71,10 @@ public class ShortList extends AppCompatActivity {
 
         } else {
             if (!listName.isEmpty()) {
-                if(type.equals("Movies")) {
+                if (type.equals("Movies")) {
                     cursor = db.getMoviesFromList(listName);
                     from = new String[]{DatabaseManager.COLUMN_TITLE, DatabaseManager.COLUMN_DURATION, DatabaseManager.COLUMN_RATING, "_id"};
-                }
-                else if(type.equals("Series")) {
+                } else if (type.equals("Series")) {
                     cursor = db.getSeriesFromList(listName);
                     from = new String[]{DatabaseManager.COLUMN_TITLE, DatabaseManager.COLUMN_SEASONS, DatabaseManager.COLUMN_RATING, "_id"};
                 }
@@ -125,5 +123,13 @@ public class ShortList extends AppCompatActivity {
                 });
             }
         }
+    }
+
+    public void onClick(View v) {
+        Intent editListIntent = new Intent(this, EditList.class);
+        editListIntent.putExtra("type", type);
+        editListIntent.putExtra("listName", listName);
+        startActivityForResult(editListIntent, 0);
+        finish();
     }
 }

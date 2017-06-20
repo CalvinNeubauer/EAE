@@ -8,4 +8,6 @@
     <color name="darkLetter">#999999</color>
     <color name="divider">#323232</color>
     <color name="slate">#999999</color>
+    <color name="pressed_color">#4d90fe</color>
+    <color name="default_color">#ffffff</color>
 </resources>
