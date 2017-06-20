@@ -88,13 +88,26 @@ public class SingleMovie extends AppCompatActivity implements View.OnClickListen
 
             textViewDirectorLabel.setText("Director:");
             cursor = db.getDirectorOfMovie(title);
-            director = cursor.getString(cursor.getColumnIndex(DatabaseManager.COLUMN_NAME));
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()){
+                director += ", "+ cursor.getString(cursor.getColumnIndex(DatabaseManager.COLUMN_NAME));
+                cursor.moveToNext();
+            }
+
 
             cursor = db.getCastFromMovie(title);
-            cast = cursor.getString(cursor.getColumnIndex(DatabaseManager.COLUMN_NAME));
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()){
+                cast += ", "+ cursor.getString(cursor.getColumnIndex(DatabaseManager.COLUMN_NAME));
+                cursor.moveToFirst();
+            }
+
 
             cursor = db.getGenreOfMovie(title);
-            genre = cursor.getString(cursor.getColumnIndex(DatabaseManager.COLUMN_NAME));
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()){
+                genre += ", "+ cursor.getString(cursor.getColumnIndex(DatabaseManager.COLUMN_NAME));
+            }
             textViewCast.setText(genre);
 
         }
