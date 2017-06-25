@@ -1,5 +1,7 @@
 package de.kl.fh.moviestar;
 
+import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -12,6 +14,8 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
 public class ShortList extends AppCompatActivity implements View.OnClickListener{
     private DatabaseManager db;
     private ListView listView;
@@ -19,6 +23,7 @@ public class ShortList extends AppCompatActivity implements View.OnClickListener
     private String[] from;
     private int[] to;
     private int series_id;
+    private Intent myIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,17 +31,20 @@ public class ShortList extends AppCompatActivity implements View.OnClickListener
         setContentView(R.layout.activity_shortlist);
 
         //Get intent extra
-        Intent myIntent = getIntent();
+        myIntent = getIntent();
         type = myIntent.getStringExtra("type");
         listName = myIntent.getStringExtra("listName");
 
-
         Button editButton = (Button) findViewById(R.id.edit_button);
+        TextView postionTextView = (TextView) findViewById(R.id.position);
+        postionTextView.setText(type);
         editButton.setOnClickListener(this);
         if (listName == null || listName.isEmpty()) {
             editButton.setVisibility(View.GONE);
+            postionTextView.setVisibility(View.VISIBLE);
         } else {
             editButton.setVisibility(View.VISIBLE);
+            postionTextView.setVisibility(View.GONE);
         }
 
         db = DatabaseManager.getInstance(this);
@@ -99,18 +107,7 @@ public class ShortList extends AppCompatActivity implements View.OnClickListener
                         startActivity(shortList);
                     }
                 });
-            } else if (type.equals("Series")) {
-                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        TextView ExtraId = (TextView) view.findViewById(R.id.title_id);
-                        Intent shortList = new Intent(ctx, ShortList.class);
-                        shortList.putExtra("ID", Integer.parseInt(ExtraId.getText().toString()));
-                        shortList.putExtra("type", "Seasons");
-                        startActivity(shortList);
-                    }
-                });
-            } else {
+            }else if(!type.equals("Episodes")){
                 listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -118,7 +115,7 @@ public class ShortList extends AppCompatActivity implements View.OnClickListener
                         Intent showMovie = new Intent(ctx, SingleMovie.class);
                         showMovie.putExtra("ID", Integer.parseInt(ExtraId.getText().toString()));
                         showMovie.putExtra("type", type);
-                        startActivity(showMovie);
+                        startActivityForResult(showMovie,0);
                     }
                 });
             }
@@ -131,5 +128,10 @@ public class ShortList extends AppCompatActivity implements View.OnClickListener
         editListIntent.putExtra("listName", listName);
         startActivityForResult(editListIntent, 0);
         finish();
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        finish();
+        startActivity(myIntent);
     }
 }

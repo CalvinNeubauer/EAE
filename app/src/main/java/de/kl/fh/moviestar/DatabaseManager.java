@@ -68,6 +68,7 @@ public class DatabaseManager extends SQLiteOpenHelper{
     private static final String TABLE_MOVIE_GENRES = "Movie_Genres";
     private static final String TABLE_MOVIE_DIRECTORS = "Movie_Directors";
     private static final String TABLE_SERIES_ACTORS = "Series_Actors";
+    private static final String TABLE_SERIES_GENRES = "Series_Genres";
     private static final String TABLE_SERIES_CREATORS = "Series_Creators";
     private static final String COLUMN_ACTOR_ID = "actor_id";
     private static final String COLUMN_DIRECTOR_ID = "director_id";
@@ -140,7 +141,7 @@ public class DatabaseManager extends SQLiteOpenHelper{
         db.execSQL(
                 "CREATE TABLE "+TABLE_EPISODES+"("+
                         COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"+
-                        COLUMN_TITLE + " TEXT UNIQUE, "+
+                        COLUMN_TITLE + " TEXT, "+
                         COLUMN_DURATION + " INTEGER, " +
                         COLUMN_DESC_EN + " TEXT, " +
                         COLUMN_DESC_DE + " TEXT, " +
@@ -247,6 +248,16 @@ public class DatabaseManager extends SQLiteOpenHelper{
                         COLUMN_MOVIE_ID + " INTEGER, " +
                         COLUMN_GENRE_ID + " INTEGER, " +
                         " FOREIGN KEY ("+COLUMN_MOVIE_ID+") REFERENCES "+TABLE_MOVIES+"("+COLUMN_ID+")," +
+                        " FOREIGN KEY ("+COLUMN_GENRE_ID+") REFERENCES "+TABLE_GENRES+"("+COLUMN_ID+")" +
+                        ")"
+        );
+
+        db.execSQL(
+                "CREATE TABLE " + TABLE_SERIES_GENRES + "(" +
+                        COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                        COLUMN_SERIES_ID + " INTEGER, " +
+                        COLUMN_GENRE_ID + " INTEGER, " +
+                        " FOREIGN KEY ("+COLUMN_SERIES_ID+") REFERENCES "+TABLE_SERIES+"("+COLUMN_ID+")," +
                         " FOREIGN KEY ("+COLUMN_GENRE_ID+") REFERENCES "+TABLE_GENRES+"("+COLUMN_ID+")" +
                         ")"
         );
@@ -457,7 +468,7 @@ public class DatabaseManager extends SQLiteOpenHelper{
             );
         }
         database.execSQL("INSERT INTO " + TABLE_SEASON_EPISODES + " (SEASON_ID,EPISODE_ID) "+
-                "SELECT a.ID, b.id FROM (SELECT ID FROM "+TABLE_SERIES_SEASONS+" WHERE SERIES_ID=(SELECT ID FROM "+TABLE_SERIES+" WHERE TITLE LIKE 'The Big Bang Theory') AND SEASON="+season+") a JOIN "+TABLE_EPISODES+" b WHERE b.TITLE LIKE 'S"+season+"%'"
+                "SELECT a.ID, b.id FROM (SELECT ID FROM "+TABLE_SERIES_SEASONS+" WHERE SERIES_ID=(SELECT ID FROM "+TABLE_SERIES+" WHERE TITLE LIKE '"+series+"') AND SEASON="+season+") a JOIN "+TABLE_EPISODES+" b WHERE b.TITLE LIKE 'S"+season+"%'"
         );
     }
 
@@ -465,6 +476,15 @@ public class DatabaseManager extends SQLiteOpenHelper{
     {
         database.execSQL(
                 "UPDATE " + TABLE_MOVIES + " SET "+COLUMN_DESC_EN+" = '"+
+                        description.replaceAll("'","''")
+                        + "' WHERE ID = "+id
+        );
+    }
+
+    private void addDescENToSeries(int id, String description)
+    {
+        database.execSQL(
+                "UPDATE " + TABLE_SERIES + " SET "+COLUMN_DESC_EN+" = '"+
                         description.replaceAll("'","''")
                         + "' WHERE ID = "+id
         );
@@ -482,7 +502,20 @@ public class DatabaseManager extends SQLiteOpenHelper{
         }
         database.execSQL(sql);
     }
-    
+
+    private void addActorsToSeries(int series_id, int[] actors)
+    {
+        String sql = "INSERT INTO " + TABLE_SERIES_ACTORS + " (SERIES_ID,ACTOR_ID) VALUES ";
+        int i=0;
+        for (int j: actors) {
+            sql +="(" + series_id + ", " + j + ")";
+            if(i<actors.length-1)
+                sql+=",";
+            i++;
+        }
+        database.execSQL(sql);
+    }
+
     private void addDirectorsToMovie(int movie_id, int[] directors)
     {
         String sql = "INSERT INTO " + TABLE_MOVIE_DIRECTORS + " (MOVIE_ID,DIRECTOR_ID) VALUES ";
@@ -496,13 +529,13 @@ public class DatabaseManager extends SQLiteOpenHelper{
         database.execSQL(sql);
     }
 
-    private void addGenreToMovie(int movie_id, int[] genres)
+    private void addCreatorsToSeries(int series_id, int[] creator)
     {
-        String sql = "INSERT INTO " + TABLE_MOVIE_GENRES + " (MOVIE_ID,GENRE_ID) VALUES ";
+        String sql = "INSERT INTO " + TABLE_SERIES_CREATORS + " (SERIES_ID,CREATOR_ID) VALUES ";
         int i=0;
-        for (int j: genres) {
-            sql +="(" + movie_id + ", " + j + ")";
-            if(i<genres.length-1)
+        for (int j: creator) {
+            sql +="(" + series_id + ", " + j + ")";
+            if(i<creator.length-1)
                 sql+=",";
             i++;
         }
@@ -520,6 +553,31 @@ public class DatabaseManager extends SQLiteOpenHelper{
             i++;
         }
         database.execSQL(sql);
+    }
+
+    private void addGenresToSeries(int series_id, int[] genres)
+    {
+        String sql = "INSERT INTO " + TABLE_SERIES_GENRES + " (SERIES_ID,GENRE_ID) VALUES ";
+        int i=0;
+        for (int j: genres) {
+            sql +="(" + series_id + ", " + j + ")";
+            if(i<genres.length-1)
+                sql+=",";
+            i++;
+        }
+        database.execSQL(sql);
+    }
+
+    //------CHANGE DATA---------------------------------------------------------------------------------------------------------
+
+    public void changeMovieListName(int listID, String newName )
+    {
+        database.execSQL("UPDATE "+TABLE_MOVIE_LISTS+" SET "+COLUMN_NAME+"='"+newName+"' WHERE "+COLUMN_ID+"="+listID);
+    }
+
+    public void changeSeriesListName(int listID, String newName )
+    {
+        database.execSQL("UPDATE "+TABLE_SERIES_LISTS+" SET "+COLUMN_NAME+"='"+newName+"' WHERE "+COLUMN_ID+"="+listID);
     }
 
     //------DELETE DATA---------------------------------------------------------------------------------------------------------
@@ -568,6 +626,27 @@ public class DatabaseManager extends SQLiteOpenHelper{
         }
         database.execSQL("DELETE FROM "+TABLE_SERIES_LISTS+" WHERE "+COLUMN_ID+"="+listID);
     }
+
+    public void deleteMovieFromDatabase(int id)
+    {
+        database.execSQL("DELETE FROM "+TABLE_MOVIE_GENRES+" WHERE "+COLUMN_MOVIE_ID+"="+id);
+        database.execSQL("DELETE FROM "+TABLE_MOVIE_DIRECTORS+" WHERE "+COLUMN_MOVIE_ID+"="+id);
+        database.execSQL("DELETE FROM "+TABLE_MOVIE_ACTORS+" WHERE "+COLUMN_MOVIE_ID+"="+id);
+        database.execSQL("DELETE FROM "+TABLE_MOVIE_LISTS_ELEMENTS+" WHERE "+COLUMN_MOVIE_ID+"="+id);
+        database.execSQL("DELETE FROM "+TABLE_MOVIES+" WHERE "+COLUMN_ID+"="+id);
+    }
+
+    public void deleteSeriesFromDatabase(int id)
+    {
+        database.execSQL("DELETE FROM "+TABLE_EPISODES+" WHERE ID IN (SELECT "+COLUMN_EPISODE_ID+" FROM "+TABLE_SEASON_EPISODES+" WHERE "+COLUMN_SERIES_ID+"="+id+")");
+        database.execSQL("DELETE FROM "+TABLE_SEASON_EPISODES+" WHERE "+COLUMN_SERIES_ID+"="+id);
+        database.execSQL("DELETE FROM "+TABLE_SERIES_SEASONS+" WHERE "+COLUMN_SERIES_ID+"="+id);
+        database.execSQL("DELETE FROM "+TABLE_SERIES_ACTORS+" WHERE "+COLUMN_SERIES_ID+"="+id);
+        database.execSQL("DELETE FROM "+TABLE_SERIES_CREATORS+" WHERE "+COLUMN_SERIES_ID+"="+id);
+        database.execSQL("DELETE FROM "+TABLE_SERIES_LISTS_ELEMENTS+" WHERE "+COLUMN_SERIES_ID+"="+id);
+        database.execSQL("DELETE FROM "+TABLE_SERIES+" WHERE "+COLUMN_ID+"="+id);
+    }
+
 
     //------GET DATA------------------------------------------------------------------------------------------------------------
     public Cursor getData(String sql)
@@ -666,6 +745,12 @@ public class DatabaseManager extends SQLiteOpenHelper{
     {
         String sql = "SELECT a.ID AS _id, a.NAME AS "+COLUMN_NAME+" FROM "+TABLE_GENRES+" a JOIN (SELECT a.GENRE_ID FROM "+TABLE_MOVIE_GENRES+" a JOIN "+TABLE_MOVIES+" b ON a.MOVIE_ID=b.ID WHERE UPPER(b.TITLE) LIKE ?) b ON b.GENRE_ID=a.ID";
         return getData(sql,new String[]{movie});
+    }
+
+    public Cursor getGenreOfSeries(String series)
+    {
+        String sql = "SELECT a.ID AS _id, a.NAME AS "+COLUMN_NAME+" FROM "+TABLE_GENRES+" a JOIN (SELECT a.GENRE_ID FROM "+TABLE_SERIES_GENRES+" a JOIN "+TABLE_SERIES+" b ON a.SERIES_ID=b.ID WHERE UPPER(b.TITLE) LIKE ?) b ON b.GENRE_ID=a.ID";
+        return getData(sql,new String[]{series});
     }
 
     public Cursor getCastFromSeries(String series)
@@ -960,6 +1045,20 @@ public class DatabaseManager extends SQLiteOpenHelper{
         return cursorToIntArray(getData(sql));
     }
 
+    private int[] getCreatorIDs(String[] creators)
+    {
+        int i=0;
+        String sql = "SELECT ID AS _id FROM "+TABLE_CREATORS+" WHERE NAME IN (";
+        for (String s:creators){
+            sql+="'"+s+"'";
+            if(i<creators.length-1)
+                sql+=",";
+            i++;
+        }
+        sql+=")";
+        return cursorToIntArray(getData(sql));
+    }
+
     private int[] getDirectorIDs(String[] directors)
     {
         int i=0;
@@ -1043,6 +1142,9 @@ public class DatabaseManager extends SQLiteOpenHelper{
         insertGenreIntoDatabase("Fantasy");
         insertGenreIntoDatabase("Crime");
         insertGenreIntoDatabase("Drama");
+        insertGenreIntoDatabase("Romance");
+        insertGenreIntoDatabase("Comedy");
+        insertGenreIntoDatabase("Thriller");
 
         //Actors
         insertActorIntoDatabase("Christian Bale");
@@ -1233,31 +1335,68 @@ public class DatabaseManager extends SQLiteOpenHelper{
         addDirectorsToMovie(getMovieIDsByTitle("Iron Man 3")[0],getDirectorIDs(new String[]{"Shane Black"}));
 
         //addGenreToMovie(String[])
-        addGenreToMovie(getMovieIDsByTitle("Batman Begins")[0],getGenreIDs(new String[]{"Drama","Action","Crime"}));
-        addGenreToMovie(getMovieIDsByTitle("Batman - The Dark Knight")[0],getGenreIDs(new String[]{"Drama","Action","Crime"}));
-        addGenreToMovie(getMovieIDsByTitle("Batman - The Dark Knight Rises")[0],getGenreIDs(new String[]{"Drama","Action","Crime"}));
-        addGenreToMovie(getMovieIDsByTitle("Sherlock Holmes")[0],getGenreIDs(new String[]{"Action","Adventure","Crime"}));
-        addGenreToMovie(getMovieIDsByTitle("Sherlock Holmes: A Game of Shadows")[0],getGenreIDs(new String[]{"Action","Adventure","Crime"}));
-        addGenreToMovie(getMovieIDsByTitle("Captain America: The First Avenger")[0],getGenreIDs(new String[]{"Action","Adventure","Sci-Fi"}));
-        addGenreToMovie(getMovieIDsByTitle("Captain America: The Winter Soldier")[0],getGenreIDs(new String[]{"Action","Adventure","Sci-Fi"}));
-        addGenreToMovie(getMovieIDsByTitle("Captain America: Civil War")[0],getGenreIDs(new String[]{"Action","Adventure","Sci-Fi"}));
-        addGenreToMovie(getMovieIDsByTitle("Guardians of the Galaxy")[0],getGenreIDs(new String[]{"Action","Adventure","Sci-Fi"}));
-        addGenreToMovie(getMovieIDsByTitle("Guardians of the Galaxy Vol. 2")[0],getGenreIDs(new String[]{"Action","Adventure","Sci-Fi"}));
-        addGenreToMovie(getMovieIDsByTitle("Doctor Strange")[0],getGenreIDs(new String[]{"Action","Adventure","Fantasy"}));
-        addGenreToMovie(getMovieIDsByTitle("The Avengers")[0],getGenreIDs(new String[]{"Action","Sci-Fi"}));
-        addGenreToMovie(getMovieIDsByTitle("Avengers: Age of Ultron")[0],getGenreIDs(new String[]{"Action","Adventure","Sci-Fi"}));
-        addGenreToMovie(getMovieIDsByTitle("Thor")[0],getGenreIDs(new String[]{"Action","Adventure","Fantasy"}));
-        addGenreToMovie(getMovieIDsByTitle("Thor: The Dark World")[0],getGenreIDs(new String[]{"Action","Adventure","Fantasy"}));
-        addGenreToMovie(getMovieIDsByTitle("Deadpool")[0],getGenreIDs(new String[]{"Action","Adventure","Comedy"}));
-        addGenreToMovie(getMovieIDsByTitle("Ant-Man")[0],getGenreIDs(new String[]{"Action","Adventure","Comedy"}));
-        addGenreToMovie(getMovieIDsByTitle("The Incredible Hulk")[0],getGenreIDs(new String[]{"Action","Adventure","Sci-Fi"}));
-        addGenreToMovie(getMovieIDsByTitle("Iron Man")[0],getGenreIDs(new String[]{"Action","Adventure","Sci-Fi"}));
-        addGenreToMovie(getMovieIDsByTitle("Iron Man 2")[0],getGenreIDs(new String[]{"Action","Adventure","Sci-Fi"}));
-        addGenreToMovie(getMovieIDsByTitle("Iron Man 3")[0],getGenreIDs(new String[]{"Action","Adventure","Sci-Fi"}));
+        addGenresToMovie(getMovieIDsByTitle("Batman Begins")[0],getGenreIDs(new String[]{"Drama","Action","Crime"}));
+        addGenresToMovie(getMovieIDsByTitle("Batman - The Dark Knight")[0],getGenreIDs(new String[]{"Drama","Action","Crime"}));
+        addGenresToMovie(getMovieIDsByTitle("Batman - The Dark Knight Rises")[0],getGenreIDs(new String[]{"Drama","Action","Crime"}));
+        addGenresToMovie(getMovieIDsByTitle("Sherlock Holmes")[0],getGenreIDs(new String[]{"Action","Adventure","Crime"}));
+        addGenresToMovie(getMovieIDsByTitle("Sherlock Holmes: A Game of Shadows")[0],getGenreIDs(new String[]{"Action","Adventure","Crime"}));
+        addGenresToMovie(getMovieIDsByTitle("Captain America: The First Avenger")[0],getGenreIDs(new String[]{"Action","Adventure","Sci-Fi"}));
+        addGenresToMovie(getMovieIDsByTitle("Captain America: The Winter Soldier")[0],getGenreIDs(new String[]{"Action","Adventure","Sci-Fi"}));
+        addGenresToMovie(getMovieIDsByTitle("Captain America: Civil War")[0],getGenreIDs(new String[]{"Action","Adventure","Sci-Fi"}));
+        addGenresToMovie(getMovieIDsByTitle("Guardians of the Galaxy")[0],getGenreIDs(new String[]{"Action","Adventure","Sci-Fi"}));
+        addGenresToMovie(getMovieIDsByTitle("Guardians of the Galaxy Vol. 2")[0],getGenreIDs(new String[]{"Action","Adventure","Sci-Fi"}));
+        addGenresToMovie(getMovieIDsByTitle("Doctor Strange")[0],getGenreIDs(new String[]{"Action","Adventure","Fantasy"}));
+        addGenresToMovie(getMovieIDsByTitle("The Avengers")[0],getGenreIDs(new String[]{"Action","Sci-Fi"}));
+        addGenresToMovie(getMovieIDsByTitle("Avengers: Age of Ultron")[0],getGenreIDs(new String[]{"Action","Adventure","Sci-Fi"}));
+        addGenresToMovie(getMovieIDsByTitle("Thor")[0],getGenreIDs(new String[]{"Action","Adventure","Fantasy"}));
+        addGenresToMovie(getMovieIDsByTitle("Thor: The Dark World")[0],getGenreIDs(new String[]{"Action","Adventure","Fantasy"}));
+        addGenresToMovie(getMovieIDsByTitle("Deadpool")[0],getGenreIDs(new String[]{"Action","Adventure","Comedy"}));
+        addGenresToMovie(getMovieIDsByTitle("Ant-Man")[0],getGenreIDs(new String[]{"Action","Adventure","Comedy"}));
+        addGenresToMovie(getMovieIDsByTitle("The Incredible Hulk")[0],getGenreIDs(new String[]{"Action","Adventure","Sci-Fi"}));
+        addGenresToMovie(getMovieIDsByTitle("Iron Man")[0],getGenreIDs(new String[]{"Action","Adventure","Sci-Fi"}));
+        addGenresToMovie(getMovieIDsByTitle("Iron Man 2")[0],getGenreIDs(new String[]{"Action","Adventure","Sci-Fi"}));
+        addGenresToMovie(getMovieIDsByTitle("Iron Man 3")[0],getGenreIDs(new String[]{"Action","Adventure","Sci-Fi"}));
 
 
-        insertSeriesIntoDatabase("The Big Bang Theory", 4.3, 8, "2007");
-        insertSeriesIntoDatabase("Breaking Bad", 4.9, 8, "2008");
+        insertSeriesIntoDatabase("The Big Bang Theory", 4.3, 12, "2007");
+        insertSeriesIntoDatabase("Breaking Bad", 4.9, 5, "2008");
+
+        addDescENToSeries(getSeriesIDsByTitle("Breaking Bad")[0],"When chemistry teacher Walter White is diagnosed with Stage III cancer and given only two years to live, he decides he has nothing to lose. He lives with his teenage son, who has cerebral palsy, and his wife, in New Mexico. Determined to ensure that his family will have a secure future, Walt embarks on a career of drugs and crime. He proves to be remarkably proficient in this new world as he begins manufacturing and selling methamphetamine with one of his former students. The series tracks the impacts of a fatal diagnosis on a regular, hard working man, and explores how a fatal diagnosis affects his morality and transforms him into a major player of the drug trade.");
+        addDescENToSeries(getSeriesIDsByTitle("The Big Bang Theory")[0],"Leonard Hofstadter and Sheldon Cooper are both brilliant physicists working at Cal Tech in Pasadena, California. They are colleagues, best friends, and roommates, although in all capacities their relationship is always tested primarily by Sheldon's regimented, deeply eccentric, and non-conventional ways. They are also friends with their Cal Tech colleagues mechanical engineer Howard Wolowitz and astrophysicist Rajesh Koothrappali. The foursome spend their time working on their individual work projects, playing video games, watching science-fiction movies, or reading comic books. As they are self-professed nerds, all have little or no luck with women. When Penny, a pretty woman and an aspiring actress from Omaha, moves into the apartment across the hall from Leonard and Sheldon's, Leonard has another aspiration in life, namely to get Penny to be his girlfriend.");
+
+        insertActorIntoDatabase("Bryan Cranston");
+        insertActorIntoDatabase("Anna Gunn");
+        insertActorIntoDatabase("Aaron Paul");
+        insertActorIntoDatabase("Dean Norris");
+        insertActorIntoDatabase("Betsy Brandt");
+        insertActorIntoDatabase("RJ Mitte");
+        insertActorIntoDatabase("Bob Odenkirk");
+        insertActorIntoDatabase("Steven Michael Quezada");
+        insertActorIntoDatabase("Jonathan Banks");
+        insertActorIntoDatabase("Giancarlo Esposito");
+        insertActorIntoDatabase("Johnny Galecki");
+        insertActorIntoDatabase("Jim Parsons");
+        insertActorIntoDatabase("Kaley Cuoco");
+        insertActorIntoDatabase("Simon Helberg");
+        insertActorIntoDatabase("Kunal Nayyar");
+        insertActorIntoDatabase("Melissa Rauch");
+        insertActorIntoDatabase("Mayim Bialik");
+        insertActorIntoDatabase("Kevin Sussman");
+        insertActorIntoDatabase("John Ross Bowie");
+        insertActorIntoDatabase("Wil Wheaton");
+
+        insertCreatorIntoDatabase("Chuck Lorre");
+        insertCreatorIntoDatabase("Bill Prady");
+        insertCreatorIntoDatabase("Vince Gilligan");
+
+        addActorsToSeries(getSeriesIDsByTitle("Breaking Bad")[0],getActorIDs(new String[]{"Bryan Cranston","Anna Gunn","Aaron Paul","Dean Norris","Betsy Brandt","RJ Mitte","Bob Odenkirk","Steven Michael Quezada","Jonathan Banks","Giancarlo Esposito"}));
+        addActorsToSeries(getSeriesIDsByTitle("The Big Bang Theory")[0],getActorIDs(new String[]{"Johnny Galecki","Jim Parsons","Kaley Cuoco","Simon Helberg","Kunal Nayyar","Melissa Rauch","Mayim Bialik","Kevin Sussman","John Ross Bowie","Wil Wheaton"}));
+
+        addCreatorsToSeries(getSeriesIDsByTitle("Breaking Bad")[0],getCreatorIDs(new String[]{"Vince Gilligan"}));
+        addCreatorsToSeries(getSeriesIDsByTitle("The Big Bang Theory")[0],getCreatorIDs(new String[]{"Chuck Lorre","Bill Prady"}));
+
+        addGenresToSeries(getSeriesIDsByTitle("Breaking Bad")[0],getGenreIDs(new String[]{"Crime","Drama","Thriller"}));
+        addGenresToSeries(getSeriesIDsByTitle("The Big Bang Theory")[0],getGenreIDs(new String[]{"Comedy","Romance"}));
 
         addMovieList("Watch List");
         addMovieToList("Watch List", "Guardians of the Galaxy");
@@ -1266,5 +1405,20 @@ public class DatabaseManager extends SQLiteOpenHelper{
         addEpisodesToSeason("The Big Bang Theory",2,20);
         addEpisodesToSeason("The Big Bang Theory",3,19);
         addEpisodesToSeason("The Big Bang Theory",4,18);
+        addEpisodesToSeason("The Big Bang Theory",5,18);
+        addEpisodesToSeason("The Big Bang Theory",6,18);
+        addEpisodesToSeason("The Big Bang Theory",7,18);
+        addEpisodesToSeason("The Big Bang Theory",8,18);
+        addEpisodesToSeason("The Big Bang Theory",9,18);
+        addEpisodesToSeason("The Big Bang Theory",10,18);
+        addEpisodesToSeason("The Big Bang Theory",11,18);
+        addEpisodesToSeason("The Big Bang Theory",12,18);
+
+
+        addEpisodesToSeason("Breaking Bad",1,18);
+        addEpisodesToSeason("Breaking Bad",2,18);
+        addEpisodesToSeason("Breaking Bad",3,18);
+        addEpisodesToSeason("Breaking Bad",4,18);
+        addEpisodesToSeason("Breaking Bad",5,18);
     }
 }

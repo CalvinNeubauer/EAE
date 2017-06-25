@@ -11,6 +11,15 @@
     tools:context="de.kl.fh.moviestar.ShortList">
 
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/position"
+        android:id="@+id/position"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:textSize="40dp"
+        android:layout_centerHorizontal="true"/>
 
     <Button
         android:id="@+id/edit_button"
@@ -20,6 +29,7 @@
         android:textSize="30dp"
         android:textColor="@color/letter"
         android:background="@color/slate"
+        android:layout_below="@id/position"
         android:layout_centerHorizontal="true"/>
 
     <ListView

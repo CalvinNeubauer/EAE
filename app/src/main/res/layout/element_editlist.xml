@@ -14,13 +14,17 @@
         android:layout_gravity="center_horizontal"
         android:orientation="vertical">
 
-        <CheckBox
-            android:id="@+id/title_checkbox"
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/deleteItemButton"
+            android:src="@drawable/ic_clear_black_24dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:scaleX="2"
-            android:scaleY="2"
-            android:buttonTint="@color/slate"/>
+            android:layout_gravity="bottom|right"
+            android:backgroundTint="@color/red"
+            android:layout_alignParentRight="true"
+            android:layout_margin="5dp"
+            android:scaleX="0.75"
+            android:scaleY="0.75"/>
 
         <TextView
             android:id="@+id/title_name"
@@ -28,7 +32,7 @@
             android:layout_height="wrap_content"
             android:textSize="25sp"
             android:paddingLeft="10dp"
-            android:layout_toRightOf="@id/title_checkbox"
+            android:layout_toLeftOf="@id/deleteItemButton"
             android:textColor="@color/letter"
             android:textStyle="bold"/>
 

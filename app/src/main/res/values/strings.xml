@@ -16,4 +16,6 @@
     <string name="editList">Edit List</string>
     <string name="deleteList">Delete List</string>
     <string name="deleteTitles">Remove Titles</string>
+    <string name="deleteFromCollection">Delete from Collection</string>
+    <string name="addToList">Add to List</string>
 </resources>

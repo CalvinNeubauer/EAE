@@ -10,4 +10,7 @@
     <color name="slate">#999999</color>
     <color name="pressed_color">#4d90fe</color>
     <color name="default_color">#ffffff</color>
+    <color name="red">#dd0000</color>
+    <color name="green">#00e000</color>
+    <color name="position">#4f20aa</color>
 </resources>
