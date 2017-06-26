@@ -195,7 +195,6 @@
             <TextView
                 android:id="@+id/seasons_count_text"
                 android:layout_width="match_parent"
-                android:text="Season Example"
                 android:background="@drawable/seasons_button"
                 android:layout_height="wrap_content"
                 android:gravity="center"
