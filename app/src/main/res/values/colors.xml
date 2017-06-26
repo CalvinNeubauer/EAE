@@ -13,4 +13,5 @@
     <color name="red">#dd0000</color>
     <color name="green">#00e000</color>
     <color name="position">#4f20aa</color>
+    <color name="SeasonButtonBackground">#002c75</color>
 </resources>

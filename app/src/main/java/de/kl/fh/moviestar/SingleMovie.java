@@ -23,7 +23,7 @@ public class SingleMovie extends AppCompatActivity implements View.OnClickListen
     private Cursor cursor;
     private Button listAdd, deleteItem;
     private Context c;
-    private TextView textViewDirector, textViewGenre, textViewCast,textViewDirectorLabel, textViewActorsLabel;
+    private TextView textViewDirector, textViewGenre, textViewCast,textViewDirectorLabel, textViewActorsLabel, textViewSeasonCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,9 +108,10 @@ public class SingleMovie extends AppCompatActivity implements View.OnClickListen
         if(type.equals("Movies")){
             setMovie();
         } else if (type.equals("Series")){
-            TextView textViewSeasonCount = (TextView) findViewById(R.id.seasons_count_text);
+            textViewSeasonCount = (TextView) findViewById(R.id.seasons_count_text);
             int seasons = cursor.getInt(cursor.getColumnIndex(DatabaseManager.COLUMN_SEASONS));
             textViewSeasonCount.setText(seasons+" Seasons");
+            textViewSeasonCount.setOnClickListener(this);
             setSeries();
         }
         textViewGenre.setText(genre);
@@ -140,6 +141,9 @@ public class SingleMovie extends AppCompatActivity implements View.OnClickListen
                 db.deleteMovieFromDatabase(ID);
                 finish();
             }
+        }
+        else if (v == textViewSeasonCount){
+
         }
             /*
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
