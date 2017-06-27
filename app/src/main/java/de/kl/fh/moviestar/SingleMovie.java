@@ -22,14 +22,14 @@ public class SingleMovie extends AppCompatActivity implements View.OnClickListen
     private DatabaseManager db;
     private Cursor cursor;
     private Button listAdd, deleteItem;
-    private Context c;
+    private Context ctx;
     private TextView textViewDirector, textViewGenre, textViewCast,textViewDirectorLabel, textViewActorsLabel, textViewSeasonCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_single_movie);
-        c = this;
+        ctx = this;
 
         Intent myIntent = getIntent();
         ID=myIntent.getIntExtra("ID",-1);
@@ -143,20 +143,12 @@ public class SingleMovie extends AppCompatActivity implements View.OnClickListen
             }
         }
         else if (v == textViewSeasonCount){
-
+            TextView ExtraId = (TextView) findViewById(R.id.title_id);
+            Intent shortList = new Intent(ctx, ShortList.class);
+            shortList.putExtra("ID", ID);
+            shortList.putExtra("type", "Seasons");
+            startActivity(shortList);
         }
-            /*
-            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    TextView ExtraId = (TextView) view.findViewById(R.id.title_id);
-                    Intent shortList = new Intent(ctx, ShortList.class);
-                    shortList.putExtra("ID", Integer.parseInt(ExtraId.getText().toString()));
-                    shortList.putExtra("type", "Seasons");
-                    startActivity(shortList);
-                }
-            });
-            */
     }
 
     private void setMovie()

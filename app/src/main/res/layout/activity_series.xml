@@ -59,4 +59,16 @@
         style="?android:attr/borderlessButtonStyle"
         android:layout_below="@+id/collection"
         android:layout_alignParentStart="true" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/addNewSeries"
+        android:textSize="40sp"
+        android:textColor="@color/letter"
+        android:layout_marginTop="50dp"
+        android:id="@+id/addItem"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_below="@id/websearch"
+        android:layout_alignParentStart="true" />
 </RelativeLayout>

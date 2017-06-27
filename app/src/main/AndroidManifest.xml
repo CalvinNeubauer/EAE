@@ -29,6 +29,7 @@
         <activity android:name=".SingleMovie"></activity>
         <activity android:name=".NewList"></activity>
         <activity android:name=".EditList"></activity>
+        <activity android:name=".AddList"></activity>
     </application>
 
 </manifest>

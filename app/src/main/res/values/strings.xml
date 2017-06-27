@@ -18,4 +18,15 @@
     <string name="deleteTitles">Remove Titles</string>
     <string name="deleteFromCollection">Delete from Collection</string>
     <string name="addToList">Add to List</string>
+    <string name="textViewTitle">Title:</string>
+    <string name="textViewRuntime">Runtime: (in Minutes)</string>
+    <string name="textViewRelease">Release: (dd.MM.YYYY)</string>
+    <string name="textViewDirectors">Directors: (seperate with ,)</string>
+    <string name="textViewGenres">Genres: (seperate with ,)</string>
+    <string name="textViewActors">Actors: (seperate with ,)</string>
+    <string name="textViewRating">Rating</string>
+    <string name="textViewDescription">Description:</string>
+    <string name="addToCollection">Add to Collection</string>
+    <string name="addNewMovie">New Movie</string>
+    <string name="addNewSeries">New Series</string>
 </resources>

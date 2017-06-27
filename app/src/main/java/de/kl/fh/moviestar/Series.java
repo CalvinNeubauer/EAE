@@ -12,7 +12,7 @@ import android.widget.TextView;
  */
 
 public class Series extends AppCompatActivity implements View.OnClickListener {
-    private Button lists,collection,websearch;
+    private Button lists,collection,websearch,addItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,11 +23,13 @@ public class Series extends AppCompatActivity implements View.OnClickListener {
         lists = (Button) findViewById(R.id.myLists);
         collection = (Button) findViewById(R.id.collection);
         websearch = (Button) findViewById(R.id.websearch);
+        addItem = (Button) findViewById(R.id.addItem);
 
         //Listener
         lists.setOnClickListener(this);
         collection.setOnClickListener(this);
         websearch.setOnClickListener(this);
+        addItem.setOnClickListener(this);
     }
 
     // git Test
@@ -39,18 +41,19 @@ public class Series extends AppCompatActivity implements View.OnClickListener {
             listIntent.putExtra("type","Series");
             startActivity(listIntent);
         }
-
-        //start Collection
-        if(v == collection){
+        else if(v == collection){
             Intent collectionIntent = new Intent(this, ShortList.class);
             collectionIntent.putExtra("type","Series");
             startActivity(collectionIntent);
         }
-
-        //start Websearch
-        if(v == websearch){
+        else if(v == websearch){
             Intent searchIntent = new Intent(this, Websearch.class);
             startActivity(searchIntent);
+        }
+        else if(v == addItem){
+            Intent addIntent = new Intent(this, AddList.class);
+            addIntent.putExtra("type","Series");
+            startActivity(addIntent);
         }
     }
 }

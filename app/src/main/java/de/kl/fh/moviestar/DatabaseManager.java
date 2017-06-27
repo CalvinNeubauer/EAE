@@ -302,7 +302,7 @@ public class DatabaseManager extends SQLiteOpenHelper{
     }
 
     //------SET DATA------------------------------------------------------------------------------------------------------------
-    private void insertMovieIntoDatabase(String title, double rating, int duration, String release)
+    public void insertMovieIntoDatabase(String title, double rating, int duration, String release)
     {
         database.execSQL(
                 "INSERT INTO " + TABLE_MOVIES + " (TITLE,RATING,DURATION,RELEASE) VALUES ("+
@@ -332,7 +332,7 @@ public class DatabaseManager extends SQLiteOpenHelper{
         database.execSQL("UPDATE "+TABLE_MOVIES+" SET WATCHED=1 WHERE ID="+id);
     }
 
-    private void insertSeriesIntoDatabase(String title, double rating, int seasons, String release)
+    public void insertSeriesIntoDatabase(String title, double rating, int seasons, String release)
     {
         database.execSQL(
                 "INSERT INTO " + TABLE_SERIES + " (TITLE,RATING,SEASONS,RELEASE) VALUES ("+
@@ -362,37 +362,37 @@ public class DatabaseManager extends SQLiteOpenHelper{
         );
     }
 
-    private void insertActorIntoDatabase(String name)
+    public void insertActorIntoDatabase(String name)
     {
         database.execSQL(
-                "INSERT INTO " + TABLE_ACTORS + " (NAME) VALUES ('"+
+                "INSERT OR REPLACE INTO " + TABLE_ACTORS + " (NAME) VALUES ('"+
                         name
                         + "')"
         );
     }
 
-    private void insertCreatorIntoDatabase(String name)
+    public void insertCreatorIntoDatabase(String name)
     {
         database.execSQL(
-                "INSERT INTO " + TABLE_CREATORS + " (NAME) VALUES ('"+
+                "INSERT OR REPLACE INTO " + TABLE_CREATORS + " (NAME) VALUES ('"+
                         name
                         + "')"
         );
     }
 
-    private void insertDirectorIntoDatabase(String name)
+    public void insertDirectorIntoDatabase(String name)
     {
         database.execSQL(
-                "INSERT INTO " + TABLE_DIRECTORS + " (NAME) VALUES ('"+
+                "INSERT OR REPLACE INTO " + TABLE_DIRECTORS + " (NAME) VALUES ('"+
                         name
                         + "')"
         );
     }
 
-    private void insertGenreIntoDatabase(String name)
+    public void insertGenreIntoDatabase(String name)
     {
         database.execSQL(
-                "INSERT INTO " + TABLE_GENRES + " (NAME) VALUES ('"+
+                "INSERT OR REPLACE INTO " + TABLE_GENRES + " (NAME) VALUES ('"+
                         name
                         + "')"
         );
@@ -464,7 +464,7 @@ public class DatabaseManager extends SQLiteOpenHelper{
         for(int i=1;i<=num;i++) {
             title = "S"+season+" E"+i;
             database.execSQL(
-                    "INSERT INTO " + TABLE_EPISODES + " (TITLE) VALUES ('"+title+"')"
+                    "INSERT INTO " + TABLE_EPISODES + " (TITLE,DURATION) VALUES ('"+title+"',22)"
             );
         }
         database.execSQL("INSERT INTO " + TABLE_SEASON_EPISODES + " (SEASON_ID,EPISODE_ID) "+
@@ -472,7 +472,7 @@ public class DatabaseManager extends SQLiteOpenHelper{
         );
     }
 
-    private void addDescENToMovie(int id, String description)
+    public void addDescENToMovie(int id, String description)
     {
         database.execSQL(
                 "UPDATE " + TABLE_MOVIES + " SET "+COLUMN_DESC_EN+" = '"+
@@ -481,7 +481,7 @@ public class DatabaseManager extends SQLiteOpenHelper{
         );
     }
 
-    private void addDescENToSeries(int id, String description)
+    public void addDescENToSeries(int id, String description)
     {
         database.execSQL(
                 "UPDATE " + TABLE_SERIES + " SET "+COLUMN_DESC_EN+" = '"+
@@ -490,7 +490,7 @@ public class DatabaseManager extends SQLiteOpenHelper{
         );
     }
 
-    private void addActorsToMovie(int movie_id, int[] actors)
+    public void addActorsToMovie(int movie_id, int[] actors)
     {
         String sql = "INSERT INTO " + TABLE_MOVIE_ACTORS + " (MOVIE_ID,ACTOR_ID) VALUES ";
         int i=0;
@@ -503,7 +503,7 @@ public class DatabaseManager extends SQLiteOpenHelper{
         database.execSQL(sql);
     }
 
-    private void addActorsToSeries(int series_id, int[] actors)
+    public void addActorsToSeries(int series_id, int[] actors)
     {
         String sql = "INSERT INTO " + TABLE_SERIES_ACTORS + " (SERIES_ID,ACTOR_ID) VALUES ";
         int i=0;
@@ -516,7 +516,7 @@ public class DatabaseManager extends SQLiteOpenHelper{
         database.execSQL(sql);
     }
 
-    private void addDirectorsToMovie(int movie_id, int[] directors)
+    public void addDirectorsToMovie(int movie_id, int[] directors)
     {
         String sql = "INSERT INTO " + TABLE_MOVIE_DIRECTORS + " (MOVIE_ID,DIRECTOR_ID) VALUES ";
         int i=0;
@@ -529,7 +529,7 @@ public class DatabaseManager extends SQLiteOpenHelper{
         database.execSQL(sql);
     }
 
-    private void addCreatorsToSeries(int series_id, int[] creator)
+    public void addCreatorsToSeries(int series_id, int[] creator)
     {
         String sql = "INSERT INTO " + TABLE_SERIES_CREATORS + " (SERIES_ID,CREATOR_ID) VALUES ";
         int i=0;
@@ -542,7 +542,7 @@ public class DatabaseManager extends SQLiteOpenHelper{
         database.execSQL(sql);
     }
 
-    private void addGenresToMovie(int movie_id, int[] genres)
+    public void addGenresToMovie(int movie_id, int[] genres)
     {
         String sql = "INSERT INTO " + TABLE_MOVIE_GENRES + " (MOVIE_ID,GENRE_ID) VALUES ";
         int i=0;
@@ -555,7 +555,7 @@ public class DatabaseManager extends SQLiteOpenHelper{
         database.execSQL(sql);
     }
 
-    private void addGenresToSeries(int series_id, int[] genres)
+    public void addGenresToSeries(int series_id, int[] genres)
     {
         String sql = "INSERT INTO " + TABLE_SERIES_GENRES + " (SERIES_ID,GENRE_ID) VALUES ";
         int i=0;
@@ -1031,7 +1031,7 @@ public class DatabaseManager extends SQLiteOpenHelper{
         return  ret;
     }
     
-    private int[] getActorIDs(String[] actors)
+    public int[] getActorIDs(String[] actors)
     {
         int i=0;
         String sql = "SELECT ID AS _id FROM "+TABLE_ACTORS+" WHERE NAME IN (";
@@ -1045,7 +1045,7 @@ public class DatabaseManager extends SQLiteOpenHelper{
         return cursorToIntArray(getData(sql));
     }
 
-    private int[] getCreatorIDs(String[] creators)
+    public int[] getCreatorIDs(String[] creators)
     {
         int i=0;
         String sql = "SELECT ID AS _id FROM "+TABLE_CREATORS+" WHERE NAME IN (";
@@ -1059,7 +1059,7 @@ public class DatabaseManager extends SQLiteOpenHelper{
         return cursorToIntArray(getData(sql));
     }
 
-    private int[] getDirectorIDs(String[] directors)
+    public int[] getDirectorIDs(String[] directors)
     {
         int i=0;
         String sql = "SELECT ID AS _id FROM "+TABLE_DIRECTORS+" WHERE NAME IN (";
@@ -1073,7 +1073,7 @@ public class DatabaseManager extends SQLiteOpenHelper{
         return cursorToIntArray(getData(sql));
     }
 
-    private int[] getGenreIDs(String[] genres)
+    public int[] getGenreIDs(String[] genres)
     {
         int i=0;
         String sql = "SELECT ID AS _id FROM "+TABLE_GENRES+" WHERE NAME IN (";

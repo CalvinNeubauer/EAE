@@ -12,24 +12,19 @@ import android.widget.Button;
 public class HomeScreen extends AppCompatActivity implements View.OnClickListener{
 
     private Button movies,series;
-    private DatabaseManager dbManager;
-    private SQLiteDatabase database;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        dbManager = DatabaseManager.getInstance(this);
         setContentView(R.layout.activity_home_screen);
 
         //Buttons
         movies = (Button) findViewById(R.id.movies);
         series = (Button) findViewById(R.id.series);
-
         //Listener
         movies.setOnClickListener(this);
         series.setOnClickListener(this);
-        dbManager.getAllMovies();
     }
 
     // git Test
@@ -40,11 +35,10 @@ public class HomeScreen extends AppCompatActivity implements View.OnClickListene
             Intent collIntent = new Intent(this, Movies.class);
             startActivity(collIntent);
         }
-
-        //start series
-        if(v == series){
+        else if(v == series){
             Intent searchIntent = new Intent(this, Series.class);
             startActivity(searchIntent);
         }
+
     }
 }
