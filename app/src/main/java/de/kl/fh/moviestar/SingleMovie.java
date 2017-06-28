@@ -1,8 +1,11 @@
 package de.kl.fh.moviestar;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.Build;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -131,16 +134,7 @@ public class SingleMovie extends AppCompatActivity implements View.OnClickListen
         }
         else if(v == deleteItem)
         {
-            if(type.equals("Series"))
-            {
-                db.deleteSeriesFromDatabase(ID);
-                finish();
-            }
-            else if(type.equals("Movies"))
-            {
-                db.deleteMovieFromDatabase(ID);
-                finish();
-            }
+            showDeleteDialog();
         }
         else if (v == textViewSeasonCount){
             TextView ExtraId = (TextView) findViewById(R.id.title_id);
@@ -239,5 +233,35 @@ public class SingleMovie extends AppCompatActivity implements View.OnClickListen
             cursor.moveToNext();
         }
         cursor.close();
+    }
+
+    private void showDeleteDialog()
+    {
+        AlertDialog alertDialog;
+        alertDialog = new AlertDialog.Builder(this).create();
+        alertDialog.setTitle("Delete object?");
+        alertDialog.setMessage("Are you sure you want to delete this object?");
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Yes",new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which)
+            {
+                if(type.equals("Series"))
+                {
+                    db.deleteSeriesFromDatabase(ID);
+                    finish();
+                }
+                else if(type.equals("Movies"))
+                {
+                    db.deleteMovieFromDatabase(ID);
+                    finish();
+                }
+            }
+        });
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "No",new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which)
+            {
+            }
+        });
+        alertDialog.setIcon(android.R.drawable.ic_dialog_alert);
+        alertDialog.show();
     }
 }

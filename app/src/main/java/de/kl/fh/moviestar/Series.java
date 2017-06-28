@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 
 /**
  * Created by Kalle on 21.05.2017.
@@ -51,7 +50,7 @@ public class Series extends AppCompatActivity implements View.OnClickListener {
             startActivity(searchIntent);
         }
         else if(v == addItem){
-            Intent addIntent = new Intent(this, AddList.class);
+            Intent addIntent = new Intent(this, AddItem.class);
             addIntent.putExtra("type","Series");
             startActivity(addIntent);
         }

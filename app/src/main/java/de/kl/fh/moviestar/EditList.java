@@ -37,13 +37,9 @@ public class EditList extends AppCompatActivity implements View.OnClickListener 
     private int listID;
     private Button deleteListButton;
     private FloatingActionButton editListNameButton;
-    private Vector<Integer> titleIDs = new Vector<>();
-    private int t_id;
     private EditListAdapter adapter;
     private Context ctx;
     private EditText editText;
-    private boolean editing;
-    private InputMethodManager imm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +51,6 @@ public class EditList extends AppCompatActivity implements View.OnClickListener 
         editListNameButton = (FloatingActionButton) findViewById(R.id.editNameButton);
         editListNameButton.setOnClickListener(this);
         editText = (EditText) findViewById(R.id.list_name);
-        editing = false;
         editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -105,9 +100,13 @@ public class EditList extends AppCompatActivity implements View.OnClickListener 
         {
             if(type.equals("Movies")) {
                 db.deleteMovieList(listID);
+                Toast.makeText(ctx, "List deleted",
+                        Toast.LENGTH_SHORT).show();
             }
             if(type.equals("Series")) {
                 db.deleteSeriesList(listID);
+                Toast.makeText(ctx, "List deleted",
+                        Toast.LENGTH_SHORT).show();
             }
         }else if(v==editListNameButton){
             if(type.equals("Movies"))
