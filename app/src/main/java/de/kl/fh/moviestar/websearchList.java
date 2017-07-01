@@ -24,6 +24,6 @@ public class websearchList extends AppCompatActivity {
         genre = myIntent.getStringExtra("genre");
         year = myIntent.getStringExtra("year");
 
-        //Datenbank aufruf hier
+        //The search should happen here
     }
 }

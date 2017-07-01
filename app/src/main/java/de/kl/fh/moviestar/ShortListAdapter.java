@@ -28,10 +28,7 @@ public class ShortListAdapter extends CursorAdapter {
         return v;
     }
 
-    /*conection between Data and view
-    0 = image
-    1 = title
-    2 = duration*/
+    //Depending on the type, display different data
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         //define picture
@@ -62,7 +59,7 @@ public class ShortListAdapter extends CursorAdapter {
             TextView titleName = (TextView) view.findViewById(to[0]);
             titleName.setText(name);
 
-            int duration = cursor.getInt(cursor.getColumnIndex(from[1]));
+            int duration = cursor.getInt(cursor.getColumnIndex(from[1]));       //Calculate hours and minutes from database data (is in minutes)
             TextView titleDuration = (TextView) view.findViewById(to[1]);
             int minutes = duration % 60;
             int hours = (duration - minutes) / 60;
@@ -85,30 +82,30 @@ public class ShortListAdapter extends CursorAdapter {
             titleName.setText(name);
 
             //define duration/seasons
-            if(type.equals("Movies")) {
+            if(type.equals("Movies")) {                                                //Calculate hours and minutes from database data (is in minutes)
                 int duration = cursor.getInt(cursor.getColumnIndex(from[1]));
                 TextView titleDuration = (TextView) view.findViewById(to[1]);
                 int minutes = duration % 60;
                 int hours = (duration - minutes) / 60;
                 titleDuration.setText(hours + "h " + minutes + "m");
             }
-            else if(type.equals("Series"))
+            else if(type.equals("Series"))                                             //Show the number of Seasons available for the Series
             {
                 int seasons = cursor.getInt(cursor.getColumnIndex(from[1]));
                 TextView titleSeasons = (TextView) view.findViewById(to[1]);
                 titleSeasons.setText(seasons+" Seasons");
             }
 
-            //define rating
+            //Define rating
             float rating = cursor.getFloat(cursor.getColumnIndex(from[2]));
             RatingBar titleRating = (RatingBar) view.findViewById(to[2]);
             titleRating.setRating(rating);
 
-            //define rating text
+            //Define rating text
             TextView ratingText = (TextView) view.findViewById(to[3]);
             ratingText.setText(""+rating);
 
-            //define ID
+            //Define ID
             String Id = cursor.getString(cursor.getColumnIndex(from[3]));
             TextView Idview = (TextView) view.findViewById(to[4]);
             Idview.setText(Id);

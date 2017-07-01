@@ -23,7 +23,6 @@
         <activity android:name=".Series" />
         <activity android:name=".Movies" />
         <activity android:name=".UserList" />
-        <activity android:name=".list_element" />
         <activity android:name=".websearchList" />
         <activity android:name=".login" />
         <activity android:name=".SingleMovie"></activity>

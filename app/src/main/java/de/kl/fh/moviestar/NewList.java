@@ -30,6 +30,10 @@ public class NewList extends AppCompatActivity implements View.OnClickListener {
         nameV = (EditText) findViewById(R.id.nameET);
     }
 
+    /* Add a new list to the Database
+     * If the listname is empty, inform the user.
+     * Close intent after the click
+     */
     public void onClick(View v){
         listName = nameV.getText().toString().trim();
         Intent returnIntent = new Intent();

@@ -13,6 +13,10 @@ public class login extends AppCompatActivity implements View.OnClickListener {
     private EditText Username;
     private EditText Password;
 
+
+    //NOT USED DUE TO NON-USE
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -75,6 +75,7 @@ public class DatabaseManager extends SQLiteOpenHelper{
     private static final String COLUMN_GENRE_ID = "genre_id";
     private static final String COLUMN_CREATOR_ID = "creator_id";
 
+    //getInstance for Singleton purposes
     public static DatabaseManager getInstance(Context ctx){
         if(instance == null) {
             instance = new DatabaseManager(ctx);
@@ -86,9 +87,9 @@ public class DatabaseManager extends SQLiteOpenHelper{
 
     private DatabaseManager(Context ctx) { super(ctx,DATABASE_NAME,null,DATABASE_VERSION); }
 
+    //Delete all Tables from Database
     private void dropAllTables(SQLiteDatabase db)
     {
-        // query to obtain the names of all tables in your database
         Cursor c = db.rawQuery("SELECT name FROM sqlite_master WHERE type='table'", null);
         List<String> tables = new ArrayList<>();
 
@@ -105,6 +106,7 @@ public class DatabaseManager extends SQLiteOpenHelper{
         }
     }
 
+    //Create all Tables required for the App; called if Database doesn't exist
     @Override
     public void onCreate(SQLiteDatabase db) {
         if(db != null)
@@ -295,13 +297,14 @@ public class DatabaseManager extends SQLiteOpenHelper{
         setBaseData();
     }
 
+    //Drops all Tables and recreates them if the current version is to old
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         dropAllTables(db);
         onCreate(db);
     }
 
-    //------SET DATA------------------------------------------------------------------------------------------------------------
+    //------SET DATA---INSERT STATEMENTS---------------------------------------------------------------------------------------------------------
     public void insertMovieIntoDatabase(String title, double rating, int duration, String release)
     {
         database.execSQL(
@@ -568,7 +571,7 @@ public class DatabaseManager extends SQLiteOpenHelper{
         database.execSQL(sql);
     }
 
-    //------CHANGE DATA---------------------------------------------------------------------------------------------------------
+    //------CHANGE DATA---UPDATE STATEMENTS------------------------------------------------------------------------------------------------------
 
     public void changeMovieListName(int listID, String newName )
     {
@@ -580,7 +583,7 @@ public class DatabaseManager extends SQLiteOpenHelper{
         database.execSQL("UPDATE "+TABLE_SERIES_LISTS+" SET "+COLUMN_NAME+"='"+newName+"' WHERE "+COLUMN_ID+"="+listID);
     }
 
-    //------DELETE DATA---------------------------------------------------------------------------------------------------------
+    //------DELETE DATA---DELETE STATEMENTS------------------------------------------------------------------------------------------------------
     public void deleteMovieFromList(int listID, int movieID)
     {
         database.execSQL("DELETE FROM "+TABLE_MOVIE_LISTS_ELEMENTS+" WHERE "+COLUMN_MOVIE_LIST_ID+"="+listID+" AND "+COLUMN_MOVIE_ID+"="+movieID);
@@ -648,7 +651,7 @@ public class DatabaseManager extends SQLiteOpenHelper{
     }
 
 
-    //------GET DATA------------------------------------------------------------------------------------------------------------
+    //------GET DATA---SELECT STATEMENTS---------------------------------------------------------------------------------------------------------
     public Cursor getData(String sql)
     {
         return getData(sql, new String[]{});
@@ -765,6 +768,10 @@ public class DatabaseManager extends SQLiteOpenHelper{
         return getData(sql,new String[]{series});
     }
 
+    /*
+     * Get MovieIDs by various Filters:
+     * Title, Actor, Genre, Director
+     */
     public Integer[] getMovieIDsByFilter(String title, String actor, String genre, String director)      //Search Terms: Actors,Genre,Director,Title
     {
         int arrays = 0;
@@ -799,6 +806,7 @@ public class DatabaseManager extends SQLiteOpenHelper{
         return ret;
     }
 
+    //Get first match that fits the given parameter
     public Integer[] getMovieIDsByTitle(String title)
     {
         String sql = "SELECT ID AS _id  FROM "+TABLE_MOVIES + " a WHERE UPPER(a.TITLE) LIKE ?";
@@ -815,6 +823,7 @@ public class DatabaseManager extends SQLiteOpenHelper{
         return ret;
     }
 
+    //Get first match that fits the given parameter
     public Integer[] getMovieIDsByActor(String actor)
     {
         String sql = "SELECT a.MOVIE_ID AS _id  FROM "+TABLE_MOVIE_ACTORS+" a JOIN "+TABLE_ACTORS+" b ON a.ACTOR_ID=b.ID WHERE UPPER(b.NAME) LIKE ?";
@@ -831,6 +840,7 @@ public class DatabaseManager extends SQLiteOpenHelper{
         return ret;
     }
 
+    //Get first match that fits the given parameter
     public Integer[] getMovieIDsByDirector(String director)
     {
         String sql = "SELECT a.MOVIE_ID AS _id  FROM "+TABLE_MOVIE_DIRECTORS+" a JOIN "+TABLE_DIRECTORS+" b ON a.DIRECTOR_ID=b.ID UPPER(b.NAME) LIKE ?";
@@ -847,6 +857,7 @@ public class DatabaseManager extends SQLiteOpenHelper{
         return ret;
     }
 
+    //Get first match that fits the given parameter
     public Integer[] getMovieIDsByGenre(String genre)
     {
         String sql = "SELECT a.MOVIE_ID AS _id FROM "+TABLE_MOVIE_GENRES+" a JOIN "+TABLE_GENRES+" b ON a.GENRE_ID=b.ID WHERE UPPER(b.NAME) LIKE ?";
@@ -862,7 +873,6 @@ public class DatabaseManager extends SQLiteOpenHelper{
         c.close();
         return ret;
     }
-
 
     public Cursor getMovieDataByID(int id)
     {
@@ -897,6 +907,10 @@ public class DatabaseManager extends SQLiteOpenHelper{
         return getData(sql, new String[]{name});
     }
 
+    /*
+     * Get SeriesIDs by various Filters:
+     * Title, Actor, Genre, Director
+     */
     public Integer[] getSeriesIDsByFilter(String title, String creator, String actor)     //Search Terms: Actors,Creators,Title
     {
         int arrays = 0;
@@ -975,7 +989,7 @@ public class DatabaseManager extends SQLiteOpenHelper{
         return ret;
     }
 
-
+    //Get all matches from two IntegerArrays
     public Integer[] getIntegerIntersect(Integer[] a, Integer [] b)
     {
         Integer[] ret = new Integer[0];
@@ -1086,7 +1100,8 @@ public class DatabaseManager extends SQLiteOpenHelper{
         sql+=")";
         return cursorToIntArray(getData(sql));
     }
-    
+
+    //Adds a base collection for this App (god! so much work adding this data)
     private void setBaseData()
     {
         //Base Movie Collection

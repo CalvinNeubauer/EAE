@@ -31,7 +31,7 @@ public class Series extends AppCompatActivity implements View.OnClickListener {
         addItem.setOnClickListener(this);
     }
 
-    // git Test
+    //Set Intents to be called when the corresponding Button is clicked
     public void onClick(View v){
 
         //View Lists

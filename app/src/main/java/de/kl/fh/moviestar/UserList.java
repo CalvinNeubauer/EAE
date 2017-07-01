@@ -26,6 +26,7 @@ public class UserList extends AppCompatActivity implements View.OnClickListener 
     private Button addListButton;
     private int ID;
 
+    //If get the user lists from the database depending on the type
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,7 +35,7 @@ public class UserList extends AppCompatActivity implements View.OnClickListener 
         addListButton = (Button) findViewById(R.id.add_button);
         addListButton.setOnClickListener(this);
 
-        //Get intent extra
+        //Get intent extras
         Intent myIntent = getIntent();
         type = myIntent.getStringExtra("type");
         ID = myIntent.getIntExtra("ID",-1);
@@ -47,7 +48,6 @@ public class UserList extends AppCompatActivity implements View.OnClickListener 
         int ItemLayout = R.layout.element_userlist;
         Cursor cursor;
 
-        //Bestimmung der Liste
         if (type.equals("Movies")) {
             type = "Movies";
             cursor = db.getMovieLists();
@@ -62,7 +62,7 @@ public class UserList extends AppCompatActivity implements View.OnClickListener 
         UserListAdapter adapter = new UserListAdapter(ctx, ItemLayout, cursor, from, to, type, 0);
         listView.setAdapter(adapter);
 
-
+        //If the action is Add and the ID is not -1, add the Movie/Series to the List
         if(ID>-1 && action.equals("add"))
         {
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -77,7 +77,7 @@ public class UserList extends AppCompatActivity implements View.OnClickListener 
                 }
             });
         }
-        else {
+        else { //If a List was selected, open the intent that shows the items in that list
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -91,12 +91,14 @@ public class UserList extends AppCompatActivity implements View.OnClickListener 
         }
     }
 
+    //Open the intent that allows the user to add a new list
     public void onClick(View v) {
         Intent newListIntent = new Intent(this, NewList.class);
         newListIntent.putExtra("type", type);
         startActivityForResult(newListIntent,0);
     }
 
+    //"Refresh" this intent
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
         finish();
         startActivity(getIntent());

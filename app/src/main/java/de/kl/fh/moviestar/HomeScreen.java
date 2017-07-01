@@ -33,11 +33,11 @@ public class HomeScreen extends AppCompatActivity implements View.OnClickListene
         //View movies
         if(v == movies){
             Intent collIntent = new Intent(this, Movies.class);
-            startActivity(collIntent);
+            startActivity(collIntent);                                           //Start Movie Intent
         }
         else if(v == series){
             Intent searchIntent = new Intent(this, Series.class);
-            startActivity(searchIntent);
+            startActivity(searchIntent);                                         //Start Series Intent
         }
 
     }

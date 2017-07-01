@@ -39,22 +39,24 @@ public class ShortList extends AppCompatActivity implements View.OnClickListener
         TextView postionTextView = (TextView) findViewById(R.id.position);
         postionTextView.setText(type);
         editButton.setOnClickListener(this);
-        if (listName == null || listName.isEmpty()) {
+        if (listName == null || listName.isEmpty()) {               //Make EditButton invisible and position-TextView visible
             editButton.setVisibility(View.GONE);
             postionTextView.setVisibility(View.VISIBLE);
-        } else {
+        } else {                                                    //Make EditButton visible and position-TextView invisible
             editButton.setVisibility(View.VISIBLE);
             postionTextView.setVisibility(View.GONE);
         }
 
-        db = DatabaseManager.getInstance(this);
+        db = DatabaseManager.getInstance(this);                     //Get DatabaseManager Instance
         listView = (ListView) findViewById(R.id.short_list_view);
 
         final Context ctx = this;
         int ItemLayout = R.layout.element_shortlist;
         Cursor cursor = null;
 
-        //Bestimmung der Liste
+        /* Set to and from to the necessary array, depending on the type
+         * Get data from database
+         */
         if (type.equals("Movies") && listName == null) {
             cursor = db.getAllMovies();
             from = new String[]{DatabaseManager.COLUMN_TITLE, DatabaseManager.COLUMN_DURATION, DatabaseManager.COLUMN_RATING, "_id"};
@@ -96,7 +98,7 @@ public class ShortList extends AppCompatActivity implements View.OnClickListener
             listView.setAdapter(adapter);
 
 
-            if (type.equals("Seasons")) {
+            if (type.equals("Seasons")) {                                                               //If the type is "Seasons" open a new Shortlist with the Episodes from that Season
                 listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -107,7 +109,7 @@ public class ShortList extends AppCompatActivity implements View.OnClickListener
                         startActivity(shortList);
                     }
                 });
-            }else if(!type.equals("Episodes")){
+            }else if(!type.equals("Episodes")){                                                         //If type is anything else than Seasons or Episodes open SingleMovie for the chosen Item
                 listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -122,6 +124,7 @@ public class ShortList extends AppCompatActivity implements View.OnClickListener
         }
     }
 
+    //EditList-Button was clicked so open the intent EditList
     public void onClick(View v) {
         Intent editListIntent = new Intent(this, EditList.class);
         editListIntent.putExtra("type", type);
@@ -130,6 +133,7 @@ public class ShortList extends AppCompatActivity implements View.OnClickListener
         finish();
     }
 
+    //"Refresh" this intent
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         finish();
         startActivity(myIntent);

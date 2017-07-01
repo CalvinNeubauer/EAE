@@ -43,9 +43,9 @@ public class AddItem extends AppCompatActivity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_additem);
 
-        ctx = getApplication();
-        db = DatabaseManager.getInstance(this);
-        type = getIntent().getStringExtra("type");
+        ctx = getApplication();                                                 //get Context
+        db = DatabaseManager.getInstance(this);                                 //get Database Instance
+        type = getIntent().getStringExtra("type");                              //get current type: Movies or Series
         textViewDirector = (TextView) findViewById(R.id.textViewDirectors);
 
         addItemButton = (Button) findViewById(R.id.addToCollection);
@@ -53,7 +53,7 @@ public class AddItem extends AppCompatActivity implements View.OnClickListener {
 
         //init
         addItemButton = (Button) findViewById(R.id.addToCollection);
-        addItemButton.setOnClickListener(this);
+        addItemButton.setOnClickListener(this);                                 //add ClickEvent to Button
         titleV = (EditText) findViewById(R.id.editTextTitle);
         actorV = (EditText) findViewById(R.id.editTextActors);
         genreV = (EditText) findViewById(R.id.editTextGenres);
@@ -63,18 +63,22 @@ public class AddItem extends AppCompatActivity implements View.OnClickListener {
         descriptionV = (EditText) findViewById(R.id.editTextGenres);
         textViewDuration = (TextView)findViewById(R.id.textViewRuntime);
 
-        if(type.equals("Movies")) {
-            textViewDirector.setText("Directors: (seperate with ,)");
+        if(type.equals("Movies")) {                                             //if type is Movies; make Runtime-EditText and Duration-TextView visible
+            textViewDirector.setText("Directors: (seperate with ,)");           //set Director-TextView text to "Directors: ...."
             runtimeV.setVisibility(View.VISIBLE);
             textViewDuration.setVisibility(View.VISIBLE);
         }
-        else {
-            textViewDirector.setText("Creators: (seperate with ,)");
+        else {                                                                  //if type is Series; make Runtime-EditText and Duration-TextView invisible
+            textViewDirector.setText("Creators: (seperate with ,)");            //set Director-TextView text to "Creators: ...."
             runtimeV.setVisibility(View.GONE);
             textViewDuration.setVisibility(View.GONE);
         }
     }
 
+    /* Check if all fields have been filled
+        yes ->  insert new Series or Movie (depending on the current type) into the Database; finish Intent after insertion
+        no -> show an AlertDialog to inform user of missing input
+     */
     public void onClick(View v){
         String itemType = "";
         if(v == addItemButton ){
@@ -120,6 +124,7 @@ public class AddItem extends AppCompatActivity implements View.OnClickListener {
         }
     }
 
+    //gets Text from EditText and trim all leading and following spaces
     private String getString(EditText e)
     {
         return e.getText().toString().trim();
@@ -133,11 +138,13 @@ public class AddItem extends AppCompatActivity implements View.OnClickListener {
         return date;
     }
 
+    //get Int Value from EditText
     private int getInt(EditText e)
     {
         return Integer.parseInt(getString(e));
     }
 
+    //check if text from EditText is greater 0 after trim
     private boolean notEmpty(EditText e) {
         if(getString(e).length()>0)
             return true;
@@ -147,6 +154,7 @@ public class AddItem extends AppCompatActivity implements View.OnClickListener {
 
 
 
+    //AlertDialog to inform User of missing input
     private void showDialog()
     {
         AlertDialog alertDialog;

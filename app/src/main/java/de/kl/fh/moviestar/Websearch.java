@@ -16,7 +16,10 @@ public class Websearch extends AppCompatActivity implements View.OnClickListener
     private EditText genreV;
     private EditText yearV;
 
-
+    /* The orginal Intent was to have the User search of a Series or a Movie
+     * the User would select that which he was looking for from the resulting list.
+     * He/She would then have the possibility to add this Item to their collection.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

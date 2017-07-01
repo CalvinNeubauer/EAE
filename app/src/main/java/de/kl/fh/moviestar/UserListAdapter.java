@@ -28,13 +28,9 @@ public class UserListAdapter extends CursorAdapter {
         return v;
     }
 
-    /*conection between Data and view
-    0 = Name
-    1 = Number of Movies*/
+    //Show the Names of the Lists and Number of Items in the Lists
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-
-        //define name
         String name = cursor.getString(cursor.getColumnIndex(from[0]));
         int items = cursor.getInt(cursor.getColumnIndex(from[1]));
         if(name!=null) {

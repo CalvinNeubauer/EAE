@@ -31,6 +31,11 @@ public class EditListAdapter extends CursorAdapter implements View.OnClickListen
         return v;
     }
 
+    /* Add a Element to the List
+     * Set ClickEvent for FloatingButton
+     * Set Title-TextView to Movie/Series Name
+     * Set ID-TextView to Movie/Series ID (is hidden)
+     */
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
 
@@ -58,17 +63,20 @@ public class EditListAdapter extends CursorAdapter implements View.OnClickListen
         this.listID = listID;
     }
 
+    /* Get DatabaseManager Instance and delete a Series/Movie from the current List
+     * "Refresh" this Parent Intent
+     */
     public void onClick(View v) {
         DatabaseManager db = DatabaseManager.getInstance(ctx);
         if(type.equals("Movies")) {
             db.deleteMovieFromList(listID, Integer.parseInt(ID));
             ((Activity)ctx).finish();
-            ((Activity)ctx).startActivity(((Activity)ctx).getIntent());
+            (ctx).startActivity(((Activity)ctx).getIntent());
         }
         else if(type.equals("Series")) {
             db.deleteSeriesFromList(listID, Integer.parseInt(ID));
             ((Activity)ctx).finish();
-            ((Activity)ctx).startActivity(((Activity)ctx).getIntent());
+            (ctx).startActivity(((Activity)ctx).getIntent());
         }
     }
 }

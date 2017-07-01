@@ -28,6 +28,7 @@ public class SingleMovie extends AppCompatActivity implements View.OnClickListen
     private Context ctx;
     private TextView textViewDirector, textViewGenre, textViewCast,textViewDirectorLabel, textViewActorsLabel, textViewSeasonCount;
 
+    //Get Extras and set ClickEvents
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +46,9 @@ public class SingleMovie extends AppCompatActivity implements View.OnClickListen
         fillXML();
     }
 
+    /* Show the number of Seasons available for the Series as a clickable item
+     * Display various data depending on the type
+     */
     private void fillXML (){
         db = DatabaseManager.getInstance(this);
         LinearLayout layout = (LinearLayout) findViewById(R.id.seasons_count_item);
@@ -123,6 +127,10 @@ public class SingleMovie extends AppCompatActivity implements View.OnClickListen
         cursor.close();
     }
 
+    /* If listAdd was clicked add the Series/Movie to a UserList (that must be chosen in the next intent)
+     * If deleteItem was clicked, ask the user to confirm the action
+     * If SeasonCount (clickable item) was clicked, show the available Seasons for the Series in a ShortList
+     */
     @Override
     public void onClick(View v){
         if(v == listAdd) {
@@ -145,6 +153,7 @@ public class SingleMovie extends AppCompatActivity implements View.OnClickListen
         }
     }
 
+    //Get Directors, Genres and Actors from the Movie
     private void setMovie()
     {
         director="";
@@ -189,6 +198,7 @@ public class SingleMovie extends AppCompatActivity implements View.OnClickListen
         cursor.close();
     }
 
+    //Get Creators, Genres and Actors from the Series
     private void setSeries()
     {
         director="";
@@ -234,6 +244,11 @@ public class SingleMovie extends AppCompatActivity implements View.OnClickListen
         }
         cursor.close();
     }
+
+    /* Show a AlertDialog to ask the user to confirm the deleting of a Movie or Series
+     * If "Yes" was clicked delete the object and close the Intent
+     * If "No" was clicked do nothing
+     */
 
     private void showDeleteDialog()
     {
