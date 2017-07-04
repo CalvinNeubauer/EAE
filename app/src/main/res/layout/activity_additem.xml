@@ -95,7 +95,7 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/letter"
                 android:id="@+id/editTextDescription"
-                android:inputType="date"
+                android:inputType="text"
                 android:layout_centerHorizontal="true"
                 android:backgroundTint="@color/letter"
                 />
